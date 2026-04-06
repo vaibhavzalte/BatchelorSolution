@@ -1,88 +1,152 @@
 "use client";
 
 import { useState } from "react";
-import { Search, MapPin, Building2, Zap, Utensils, ChevronDown } from "lucide-react";
+import { 
+  Search, 
+  MapPin, 
+  ChevronDown, 
+  Star, 
+  Building2, 
+  Zap, 
+  Utensils, 
+  Music, 
+  Heart, 
+  Compass, 
+  Briefcase, 
+  Laptop, 
+  Globe, 
+  Gamepad2,
+  ArrowRight
+} from "lucide-react";
+
+const SECONDARY_FILTERS = [
+  { id: "any-day", label: "Any day" },
+  { id: "any-type", label: "Any type" },
+  { id: "distance", label: "Within 30 kilometers" },
+];
 
 const CATEGORIES = [
-  { id: "rooms", label: "Find Rooms", icon: Building2 },
-  { id: "vacancies", label: "Room Vacancy", icon: Zap },
-  { id: "food", label: "Food Stalls", icon: Utensils },
+  { id: "all", label: "All posts", icon: Star, color: "bg-orange-500/10 text-orange-600" },
+  { id: "rooms", label: "New Rooms", icon: Building2, color: "bg-indigo-500/10 text-indigo-600" },
+  { id: "vacancies", label: "Vacancies", icon: Utensils, color: "bg-rose-500/10 text-rose-600" },
+  { id: "food", label: "Food Stops", icon: Music, color: "bg-pink-500/10 text-pink-600" },
+  { id: "travel", label: "Travel", icon: Compass, color: "bg-blue-500/10 text-blue-600" },
+  { id: "business", label: "Business", icon: Briefcase, color: "bg-amber-500/10 text-amber-600" },
+  { id: "tech", label: "Technology", icon: Laptop, color: "bg-cyan-500/10 text-cyan-600" },
+  { id: "social", label: "Social", icon: Zap, color: "bg-yellow-500/10 text-yellow-600" },
+  { id: "language", label: "Language", icon: Globe, color: "bg-emerald-500/10 text-emerald-600" },
+  { id: "games", label: "Games", icon: Gamepad2, color: "bg-violet-500/10 text-violet-600" },
 ];
 
 export default function SearchFilter() {
-  const [selectedCategory, setSelectedCategory] = useState("vacancies");
-  const [location, setLocation] = useState("");
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [keyword, setKeyword] = useState("");
+  const [location, setLocation] = useState("Pune, IN");
 
   return (
-    <div className="w-full max-w-5xl mx-auto -mt-10 relative z-20 px-6">
-      <div className="bg-white/80 backdrop-blur-xl border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[2.5rem] p-3 md:p-4 flex flex-col items-stretch gap-4 md:gap-2">
+    <div className="w-full bg-white pt-24 pb-8">
+      <div className="max-w-7xl mx-auto px-6 space-y-12">
         
-        {/* Category Tabs */}
-        <div className="flex items-center gap-1 p-1 bg-slate-100/50 rounded-2xl w-fit">
-          {CATEGORIES.map((cat) => {
-            const Icon = cat.icon;
-            const isSelected = selectedCategory === cat.id;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`
-                  flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300
-                  ${isSelected 
-                    ? "bg-white text-primary shadow-sm ring-1 ring-black/5" 
-                    : "text-foreground/50 hover:text-foreground hover:bg-white/50"}
-                `}
-              >
-                <Icon className={`w-4 h-4 ${isSelected ? "text-primary" : "text-foreground/40"}`} />
-                {cat.label}
-              </button>
-            );
-          })}
+        {/* 1. Horizontal Categories (Secondary Tabs) */}
+        <div className="relative group overflow-hidden">
+          <div className="flex items-center gap-10 overflow-x-auto no-scrollbar scroll-smooth pb-4 pr-12">
+            {CATEGORIES.map((cat) => {
+              const Icon = cat.icon;
+              const isActive = activeCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`flex flex-col items-center gap-3 transition-all shrink-0 ${
+                    isActive ? "scale-105" : "hover:scale-105"
+                  }`}
+                >
+                  <div className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all duration-300 ${
+                    isActive 
+                      ? "bg-primary text-white shadow-lg shadow-primary/20" 
+                      : `${cat.color} hover:bg-white border border-transparent`
+                  }`}>
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <span className={`text-[11px] font-bold tracking-tight uppercase ${
+                      isActive ? "text-primary" : "text-gray-400"
+                    }`}>
+                      {cat.label}
+                    </span>
+                    {isActive && <div className="w-1 h-1 bg-primary rounded-full mt-1" />}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <button className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 bg-white border border-gray-200 rounded-full items-center justify-center shadow-md hover:shadow-lg transition-all hover:scale-105 z-10 translate-x-1/2 hidden group-hover:flex">
+            <ArrowRight className="w-5 h-5 text-gray-400" />
+          </button>
+          <div className="absolute right-0 top-0 bottom-4 w-24 bg-linear-to-l from-white via-white/80 to-transparent pointer-events-none" />
         </div>
 
-        {/* Main Search Bar */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
-          {/* Location Input */}
-          <div className="flex-1 relative group">
-            <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none group-focus-within:text-primary transition-colors">
-              <MapPin className="w-5 h-5 text-foreground/30 group-focus-within:text-primary" />
+        {/* 2. Combined Search Bar with Inline Filters */}
+        <div className="flex items-center justify-center">
+          <div className="w-full flex flex-col lg:flex-row items-center bg-white border-2 border-gray-100 lg:rounded-full rounded-3xl shadow-sm focus-within:border-primary/20 focus-within:shadow-md transition-all p-2 lg:h-16 gap-2 lg:gap-0">
+            
+            {/* Search Input */}
+            <div className="flex-[1.5] w-full flex items-center px-4 lg:border-r border-gray-100 min-w-0">
+              <Search className="w-5 h-5 text-gray-400 shrink-0 mr-3" />
+              <input
+                type="text"
+                placeholder="Search posts..."
+                className="w-full bg-transparent outline-none text-sm font-semibold placeholder:text-gray-400"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+              />
             </div>
-            <input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="Where are you looking? (e.g. Pune, Mumbai...)"
-              className="w-full h-16 pl-14 pr-6 bg-slate-50/50 border border-slate-200/60 rounded-2xl outline-none focus:border-primary focus:bg-white transition-all text-base font-medium placeholder:text-foreground/30 focus:shadow-[0_0_0_4px_rgba(99,102,241,0.05)]"
-            />
-          </div>
 
-          {/* Quick Filters (Simplified representation) */}
-          <div className="hidden lg:flex items-center gap-2 px-4 border-l border-slate-100">
-            <button className="flex items-center gap-2 px-4 py-3 rounded-xl hover:bg-slate-100 transition-colors text-sm font-medium text-foreground/60 whitespace-nowrap">
-              Price Range <ChevronDown className="w-4 h-4 opacity-50" />
-            </button>
-            <button className="flex items-center gap-2 px-4 py-3 rounded-xl hover:bg-slate-100 transition-colors text-sm font-medium text-foreground/60 whitespace-nowrap">
-              Property Type <ChevronDown className="w-4 h-4 opacity-50" />
-            </button>
-          </div>
+            {/* Location Input */}
+            <div className="flex-1 w-full flex items-center px-4 lg:border-r border-gray-100 min-w-0">
+              <MapPin className="w-5 h-5 text-gray-400 shrink-0 mr-3" />
+              <input
+                type="text"
+                placeholder="Location"
+                className="w-full bg-transparent outline-none text-sm font-semibold placeholder:text-gray-400"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+              />
+            </div>
 
-          {/* Search Button */}
-          <button className="h-16 px-10 bg-primary hover:bg-primary-hover text-white rounded-2xl font-bold transition-all shadow-lg shadow-primary/25 active:scale-95 flex items-center justify-center gap-2 group">
-            <Search className="w-5 h-5 group-hover:scale-110 transition-transform" />
-            <span>Search</span>
-          </button>
+            {/* Inline Filters */}
+            <div className="hidden xl:flex items-center flex-1 gap-2 px-4 border-r border-gray-100">
+              {SECONDARY_FILTERS.map((f) => (
+                <button 
+                  key={f.id} 
+                  className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-50 rounded-lg text-[12px] font-bold text-gray-500 whitespace-nowrap transition-colors"
+                >
+                  {f.label} <ChevronDown className="w-3.5 h-3.5" />
+                </button>
+              ))}
+            </div>
+
+            {/* Search Button */}
+            <div className="px-2">
+              <button className="h-12 lg:h-12 px-8 bg-gray-900 hover:bg-black text-white rounded-full flex items-center justify-center transition-all shadow-sm font-bold text-sm gap-2">
+                <Search className="w-4 h-4" />
+                <span>Find</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Suggested Locations/Labels */}
-      <div className="flex flex-wrap items-center justify-center mt-6 gap-6 text-sm">
-        <span className="text-foreground/40 font-medium uppercase tracking-wider text-[10px]">Popular Searches:</span>
-        {["Kothrud", "Aundh", "Hinjewadi", "Viman Nagar"].map((loc) => (
-          <button key={loc} className="text-foreground/60 hover:text-primary font-medium transition-colors">
-            {loc}
-          </button>
-        ))}
-      </div>
+      <style jsx global>{`
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </div>
   );
 }

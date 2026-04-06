@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { useCategory } from "@/contexts/CategoryContext";
 import { Home, Search, Building2, Utensils, Menu, X } from "lucide-react";
 
 const Header = () => {
@@ -23,6 +25,8 @@ const Header = () => {
     { name: "Food Stalls", href: "#food", icon: <Utensils className="w-4 h-4" /> },
   ];
 
+  const { activeCatData } = useCategory();
+
   return (
     <header
       className={`fixed left-1/2 -translate-x-1/2 w-[95%] max-w-7xl z-50 transition-all duration-300 rounded-2xl ${
@@ -30,13 +34,28 @@ const Header = () => {
       }`}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-primary/20">
-            BS
+        <Link href="/" className="flex items-center gap-4 group transition-transform hover:scale-105">
+          <div 
+            className="relative w-16 h-16 rounded-2xl flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 overflow-hidden transition-all duration-1000"
+            style={{ backgroundColor: activeCatData?.hex || "#ffffff" }}
+          >
+            <Image 
+              src="/bs-icon.png" 
+              alt="BatchelorSolution Icon" 
+              width={64} 
+              height={64}
+              priority
+              className="object-contain"
+            />
           </div>
-          <span className="text-xl font-bold tracking-tight text-foreground hidden sm:block">
-            Batchelor<span className="text-primary">Solution</span>
-          </span>
+          <div className="flex flex-col -gap-1">
+            <span className="text-xl font-bold tracking-tight text-foreground hidden sm:block leading-tight">
+              Batchelor<span className="text-primary">Solution</span>
+            </span>
+            <span className="text-[10px] font-bold text-primary tracking-[0.2em] uppercase hidden sm:block">
+              Premium Living
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Nav */}

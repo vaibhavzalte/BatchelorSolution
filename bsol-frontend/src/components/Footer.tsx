@@ -1,8 +1,13 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { useCategory } from "@/contexts/CategoryContext";
 import { Globe, MessageCircle, Mail, Phone, MapPin, AtSign } from "lucide-react";
 
 const Footer = () => {
+  const { activeCatData } = useCategory();
   const footerLinks = [
     {
       title: "Solutions",
@@ -43,13 +48,27 @@ const Footer = () => {
     <footer className="footer bg-white glass border-t border-border-color pt-16 pb-8 transition-all dark:bg-zinc-950/20">
       <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
         <div className="flex flex-col gap-6">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
-              BS
+          <Link href="/" className="flex items-center gap-4 transition-transform hover:scale-105 group">
+            <div 
+              className="relative w-16 h-16 rounded-2xl flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 overflow-hidden transition-all duration-1000"
+              style={{ backgroundColor: activeCatData?.hex || "#ffffff" }}
+            >
+              <Image 
+                src="/bs-icon.png" 
+                alt="BatchelorSolution Icon" 
+                width={64} 
+                height={64}
+                className="object-contain"
+              />
             </div>
-            <span className="text-xl font-bold tracking-tight text-foreground">
-              Batchelor<span className="text-primary">Solution</span>
-            </span>
+            <div className="flex flex-col -gap-1">
+              <span className="text-xl font-bold tracking-tight text-foreground leading-tight">
+                Batchelor<span className="text-primary">Solution</span>
+              </span>
+              <span className="text-[10px] font-bold text-primary tracking-[0.2em] uppercase">
+                Premium Living
+              </span>
+            </div>
           </Link>
           <p className="text-foreground/70 max-w-xs leading-relaxed text-sm">
             Everything a bachelor needs to live comfortably. Find rooms, food stalls, and community solutions all in one place.

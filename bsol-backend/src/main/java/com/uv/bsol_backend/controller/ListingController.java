@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.JsonNode;
 
 @RestController
-@RequestMapping("uv-api")
+@RequestMapping("uv-api/v1")
 @CrossOrigin("http://localhost:3000")
 @Slf4j
 public class ListingController {
@@ -23,9 +23,8 @@ public class ListingController {
     @Autowired
     private ListingService listingService;
 
-    @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/{mgmtName}/v1/{typeName}",
+    @PostMapping(
+            value = "/{mgmtName}/{typeName}",
             produces = {"application/json;charset=utf-8"},
             consumes = {"application/json;charset=utf-8"}
     )
@@ -36,11 +35,9 @@ public class ListingController {
     ) {
         log.info("Received request to create listing for mgmtName: {}, typeName: {}, with body: {}", mgmtName, typeName, body);
         DataTransformer<?> transformer = dataTransformerFactory.getTransformerFor(ListingType.fromValue(typeName), body.toString());
-        
         Object o = listingService.createListing(transformer);
-        
         log.info("Created primary id : {}", transformer.getPrimaryId());
-        return new ResponseEntity<>("Listing created successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>(o, HttpStatus.CREATED);
     }
     @GetMapping
     public String getListings() {

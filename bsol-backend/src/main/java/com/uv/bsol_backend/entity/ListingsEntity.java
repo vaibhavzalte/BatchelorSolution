@@ -33,7 +33,7 @@ public class ListingsEntity {
     @Column(name = "secondary_id")
     private String secondaryId;
 
-    @Column(name = "payload")
+    @Column(name = "payload", columnDefinition = "TEXT")
     private String payload;
 
     private Double latitude;
@@ -44,9 +44,6 @@ public class ListingsEntity {
     @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private OffsetDateTime createTime;
-
-    @Column(name = "created_by")
-    private String createdBy;
 
     @Column(name = "update_time")
     @UpdateTimestamp

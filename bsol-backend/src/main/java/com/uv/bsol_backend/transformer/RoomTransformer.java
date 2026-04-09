@@ -3,33 +3,24 @@ package com.uv.bsol_backend.transformer;
 import com.uv.bsol_backend.entity.Room;
 
 public class RoomTransformer extends BaseTransformer<Room> {
+    public static final String LISTING_TYPE = "Room";
     public RoomTransformer(Room room){
         super(room);
     }
 
     @Override
-    public String getPrimaryId() {
-        return "room-"+listing.getId();
-    }
-
-    @Override
-    public String getSecondaryId() {
-        return null;
+    public Long getPrimaryId() {
+        return listing.getId();
     }
 
     @Override
     public String getType() {
-        return null;
+        return LISTING_TYPE;
     }
 
     @Override
     public String getSubType() {
-        return null;
-    }
-
-    @Override
-    public Room getPayload() {
-        return listing;
+        return listing.getRoomType();
     }
 
     @Override
@@ -43,7 +34,7 @@ public class RoomTransformer extends BaseTransformer<Room> {
     }
 
     @Override
-    public Class<?> getTransactionClass() {
-        return null;
+    public Class<Room> getTransactionClass() {
+        return Room.class;
     }
 }

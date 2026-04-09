@@ -9,7 +9,7 @@ public class MessTransformer extends BaseTransformer<Mess>{
     }
 
     @Override
-    public String getPrimaryId() {
+    public Long getPrimaryId() {
         return null;
     }
 

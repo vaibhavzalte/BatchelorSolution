@@ -12,6 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.JsonNode;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("uv-api/v1")
 @CrossOrigin("http://localhost:3000")
@@ -38,6 +41,21 @@ public class ListingController {
         Object o = listingService.createListing(transformer);
         log.info("Created primary id : {}", transformer.getPrimaryId());
         return new ResponseEntity<>(o, HttpStatus.CREATED);
+    }
+
+    @GetMapping(
+            value = "/{mgmtName}/{typeName}",
+            produces = {"application/json;charset=utf-8"}
+    )
+    public ResponseEntity<List<Object>> getListings(
+            @PathVariable String mgmtName,
+            @PathVariable String typeName,
+            @RequestParam Map<String, String> allParams
+    ) {
+        log.info("Received request to get all listing of type {} with these parameters {}", typeName, allParams);
+        DataTransformer<?> transformer = dataTransformerFactory.getTransformerFor(ListingType.fromValue(typeName), null);
+        List<Object> listings = (List<Object>) listingService.getListingsByTypeAndFilters(transformer.getTransactionClass(), transformer.getType(), allParams);
+        return new ResponseEntity<>(listings, HttpStatus.OK);
     }
     @GetMapping
     public String getListings() {

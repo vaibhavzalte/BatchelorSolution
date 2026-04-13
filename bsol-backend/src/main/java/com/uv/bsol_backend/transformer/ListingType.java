@@ -2,7 +2,8 @@ package com.uv.bsol_backend.transformer;
 
 public enum ListingType {
     Room("room"),
-    Mess("mess");
+    Mess("mess"),
+    RoomVacancy("room-vacancy");
 
     private final String value;
     ListingType(String value) {this.value = value;}

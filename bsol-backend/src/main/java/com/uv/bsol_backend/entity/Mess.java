@@ -7,8 +7,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.OffsetDateTime;
 
-@Entity
-@Table(name = "messes")
 @Getter
 @Setter
 @Builder
@@ -16,26 +14,19 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 public class Mess {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     // 🔹 Basic Info
-    @Column(nullable = false)
     private String title;   // e.g. "Shree Ganesh Mess"
 
-    @Column(columnDefinition = "TEXT")
     private String description;
 
     // 🔹 Mess Details
-    @Column(nullable = false)
     private String foodType; // VEG / NON-VEG / BOTH
 
-    @Column(nullable = false)
     private String mealType; // BREAKFAST / LUNCH / DINNER / ALL
 
     // 🔹 Pricing
-    @Column(nullable = false)
     private Double monthlyFee;
 
     private Double perMealFee;
@@ -45,7 +36,6 @@ public class Mess {
     private Boolean diningArea;
 
     // 🔹 Location
-    @Column(nullable = false)
     private String address;
 
     private String city;
@@ -57,16 +47,13 @@ public class Mess {
     private Double longitude;
 
     // 🔹 Owner Info
-    @Column(nullable = false)
     private String ownerName;
 
-    @Column(nullable = false)
     private String ownerContact;
 
     private String ownerEmail;
 
     // 🔹 Status
-    @Column(nullable = false)
     private String status; // AVAILABLE / CLOSED / INACTIVE
 
     // 🔹 Audit Fields

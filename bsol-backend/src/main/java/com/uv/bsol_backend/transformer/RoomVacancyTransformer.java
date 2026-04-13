@@ -1,11 +1,11 @@
 package com.uv.bsol_backend.transformer;
 
-import com.uv.bsol_backend.entity.Room;
+import com.uv.bsol_backend.entity.RoomVacancy;
 
-public class RoomTransformer extends BaseTransformer<Room> {
-    public static final String LISTING_TYPE = "Room";
-    public RoomTransformer(Room room){
-        super(room);
+public class RoomVacancyTransformer extends BaseTransformer<RoomVacancy> {
+    public static final String LISTING_TYPE = "RoomVacancy";
+    public RoomVacancyTransformer(RoomVacancy roomVacancy){
+        super(roomVacancy);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class RoomTransformer extends BaseTransformer<Room> {
     }
 
     @Override
-    public Class<Room> getTransactionClass() {
-        return Room.class;
+    public Class<RoomVacancy> getTransactionClass() {
+        return RoomVacancy.class;
     }
 }

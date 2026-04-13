@@ -7,8 +7,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.OffsetDateTime;
 
-@Entity
-@Table(name = "rooms")
 @Getter
 @Setter
 @Builder
@@ -21,17 +19,13 @@ public class Room {
     private Long id;
 
     // 🔹 Basic Info
-    @Column(nullable = false)
     private String title;   // e.g. "1BHK Room for Boys in Kothrud"
 
-    @Column(columnDefinition = "TEXT")
     private String description;
 
     // 🔹 Room Details
-    @Column(nullable = false)
     private String roomType;   // 1RK, 1BHK, 2BHK
 
-    @Column(nullable = false)
     private String availableFor; // BOYS / GIRLS / FAMILY
 
     private Boolean furnished; // true / false
@@ -41,7 +35,6 @@ public class Room {
     private Integer availableRooms;
 
     // 🔹 Pricing
-    @Column(nullable = false)
     private Double rent;
 
     private Double deposit;
@@ -56,7 +49,6 @@ public class Room {
     private Boolean attachedBathroom;
 
     // 🔹 Location
-    @Column(nullable = false)
     private String address;
 
     private String city;
@@ -68,16 +60,13 @@ public class Room {
     private Double longitude;
 
     // 🔹 Owner Info
-    @Column(nullable = false)
     private String ownerName;
 
-    @Column(nullable = false)
     private String ownerContact;
 
     private String ownerEmail;
 
     // 🔹 Status
-    @Column(nullable = false)
     private String status; // AVAILABLE / FULL / INACTIVE
 
     // 🔹 Audit Fields

@@ -42,6 +42,6 @@ public class RoomVacancyTransformer extends BaseTransformer<RoomVacancy> {
 
     @Override
     public Class<?> getTransactionClass() {
-        return null;
+        return RoomVacancy.class;
     }
 }

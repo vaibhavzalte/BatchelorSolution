@@ -5,6 +5,7 @@ import com.uv.bsol_backend.repository.ListingsRepository;
 import com.uv.bsol_backend.transformer.DataTransformer;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class ListingService {
 
     @Autowired
@@ -56,12 +58,14 @@ public class ListingService {
     }
 
     public <T> List<T> getListingsByTypeAndFilters(Class<T> clazz, String type, Map<String, String> allParams) {
-        StringBuilder query = new StringBuilder("SELECT DISTINCT l1 FROM ListingsEntity l1 WHERE type=:type");
+        log.info("get listing sql creating...");
+        StringBuilder query = new StringBuilder("SELECT DISTINCT t1 FROM ListingsEntity t1 WHERE type=:type");
         Map<String, Object> filterParams = addFilterConditions(query, allParams);
         filterParams.put("type", type);
         TypedQuery<ListingsEntity> listingsQuery = entityManager.createQuery(query.toString(), ListingsEntity.class);
         setFilterParameters(listingsQuery, filterParams);
         List<ListingsEntity> listings = listingsQuery.getResultList();
+        System.out.println("listings"+listings);
         List<T> dtoList = new ArrayList<>();
         for (ListingsEntity listingsEntity : listings) {
             T dto = mapToDto(listingsEntity, clazz);

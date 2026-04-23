@@ -1,10 +1,11 @@
 package com.uv.bsol_backend.transformer;
 
 public enum ListingType {
-    Room("room"),
-    Mess("Mess"),
-    RoomVacancy("room-vacancy"),
-    FoodStall("food-stall");
+    ROOM("room"),
+    MESS("Mess"),
+    ROOM_VACANCY("room-vacancy"),
+    FOOD_STALL("food-stall"),
+    STUDY_ROOM("study-room");
 
     private final String value;
 

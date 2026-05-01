@@ -39,7 +39,7 @@ public class ListingController {
             @Valid @RequestBody JsonNode body
     ) {
         log.info("Received request to create listing for mgmtName: {}, typeName: {}, with body: {}", mgmtName, typeName, body);
-        DataTransformer<?> transformer = dataTransformerFactory.getTransformerFor(ListingType.fromValue(typeName), body.toString());
+        DataTransformer<?,?> transformer = dataTransformerFactory.getTransformerFor(ListingType.fromValue(typeName), body.toString());
         Object o = listingService.createListing(transformer);
         log.info("Created primary id : {}", transformer.getPrimaryId());
         return new ResponseEntity<>(o, HttpStatus.CREATED);
@@ -58,7 +58,7 @@ public class ListingController {
     ) {
 
         log.info("Received request to create listing with images for mgmtName: {}, typeName: {}", mgmtName, typeName);
-        DataTransformer<?> transformer = dataTransformerFactory.getTransformerFor(ListingType.fromValue(typeName), body);
+        DataTransformer<?,?> transformer = dataTransformerFactory.getTransformerFor(ListingType.fromValue(typeName), body);
         Object o = listingService.createListingWithImages(transformer, images,typeName);
         return new ResponseEntity<>(o, HttpStatus.CREATED);
     }
@@ -74,8 +74,8 @@ public class ListingController {
             @RequestParam Map<String, String> allParams
     ) {
         log.info("Received request to get all listing of type {} with these parameters {}", typeName, allParams);
-        DataTransformer<?> transformer = dataTransformerFactory.getTransformerFor(ListingType.fromValue(typeName), null);
-        List<Object> listings = (List<Object>) listingService.getListingsByTypeAndFilters(transformer.getTransactionClass(), transformer.getType(), allParams);
+        DataTransformer<?,?> transformer = dataTransformerFactory.getTransformerFor(ListingType.fromValue(typeName), null);
+        List<Object> listings = (List<Object>) listingService.getListingsByTypeAndFilters(transformer.getResponseClass(), transformer.getType(), allParams);
         return new ResponseEntity<>(listings, HttpStatus.OK);
     }
 

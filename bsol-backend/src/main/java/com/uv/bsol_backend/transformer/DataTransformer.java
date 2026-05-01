@@ -1,6 +1,8 @@
 package com.uv.bsol_backend.transformer;
 
-public interface DataTransformer<T> {
+import java.util.List;
+
+public interface DataTransformer<REQ,RES> {
     Long getPrimaryId();
 
     String getSecondaryId();
@@ -9,11 +11,14 @@ public interface DataTransformer<T> {
 
     String getSubType();
 
-    T getPayload();
+    RES getPayload();
 
     Double getLatitude();
 
     Double getLongitude();
 
+    void setImages(List<String> images);
+
     Class<?> getTransactionClass();
+    Class<?> getResponseClass();
 }

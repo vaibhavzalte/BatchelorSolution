@@ -10,8 +10,8 @@ public class DataTransformerFactory {
     @Autowired
     ObjectMapper objectMapper;
 
-    public DataTransformer<?> getTransformerFor(ListingType type, String payload) {
-        DataTransformer<?> transformer = null;
+    public DataTransformer<?,?> getTransformerFor(ListingType type, String payload) {
+        DataTransformer<?,?> transformer = null;
         switch (type) {
             case ROOM ->
                     transformer = new RoomTransformer(payload == null ? null : objectMapper.readValue(payload, Room.class));

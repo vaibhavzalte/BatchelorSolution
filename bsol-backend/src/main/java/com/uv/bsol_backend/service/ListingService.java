@@ -33,13 +33,14 @@ public class ListingService {
     @Autowired
     private FileStorageService fileStorageService;
 
-    public <T> T createListingWithImages(DataTransformer<T> transformer, List<MultipartFile> images ,String typName) {
-        T payload = transformer.getPayload();
+    public <REQ,RES> RES createListingWithImages(DataTransformer<REQ,RES> transformer, List<MultipartFile> images ,String typName) {
+//        RES payload = transformer.getPayload();
 
         if (images != null && !images.isEmpty()) {
             try {
                 List<String> imageUrls = fileStorageService.storeFiles(images);
-                    ((CommonListingFields) payload).setImages(imageUrls);
+                transformer.setImages(imageUrls);
+//                    ((CommonListingFields) payload).setImages(imageUrls);
             } catch (java.io.IOException e) {
                 log.error("Failed to store images", e);
                 throw new RuntimeException("Failed to store images", e);
@@ -58,7 +59,7 @@ public class ListingService {
         }
     }
 
-        public <T> T createListing(DataTransformer<T> transformer) {
+        public <REQ,RES> RES createListing(DataTransformer<REQ,RES> transformer) {
         ListingsEntity entity = listingsRepository.findByIdAndTypeAndStatus(transformer.getPrimaryId(), transformer.getType(), "ACTIVE");
         if (entity != null) {
             throw new RuntimeException("Listing already exists with primary id: " + transformer.getPrimaryId() + " and type: " + transformer.getType());
@@ -67,11 +68,12 @@ public class ListingService {
                 .type(transformer.getType())
                 .latitude(transformer.getLatitude())
                 .longitude(transformer.getLongitude())
-                .payload(getJsonString(transformer.getPayload()))
+                .payload(getJsonString(transformer.getPayload()))  // i want here RoomDTO payload only
                 .status("Active")
                 .build();
         listingsRepository.save(newEntity);
-        return mapToDto(newEntity, (Class<T>) transformer.getPayload().getClass());
+        return mapToDto(newEntity,(Class<RES>)transformer.getResponseClass());
+//        return mapToDto(newEntity, (Class<RES>) transformer.getPayload().getClass());
 
     }
 
@@ -82,7 +84,6 @@ public class ListingService {
     private <T> T mapToDto(ListingsEntity entity, Class<T> dtoClassName) {
         T dto = null;
         if (entity != null && entity.getPayload() != null) {
-            System.out.println("entity" + entity.getPayload());
             dto = objectMapper.readValue(entity.getPayload(), dtoClassName);
         }
         return dto;
@@ -96,7 +97,6 @@ public class ListingService {
         TypedQuery<ListingsEntity> listingsQuery = entityManager.createQuery(query.toString(), ListingsEntity.class);
         setFilterParameters(listingsQuery, filterParams);
         List<ListingsEntity> listings = listingsQuery.getResultList();
-        System.out.println("listings" + listings);
         List<T> dtoList = new ArrayList<>();
         for (ListingsEntity listingsEntity : listings) {
             T dto = mapToDto(listingsEntity, clazz);

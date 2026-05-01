@@ -1,11 +1,21 @@
 package com.uv.bsol_backend.transformer;
 
-public abstract class BaseTransformer<T> implements DataTransformer<T> {
-    // common logic here
-    T listing;
+import com.uv.bsol_backend.entity.CommonListingFields;
+import java.util.List;
 
-    BaseTransformer(T listing) {
+public abstract class BaseTransformer<REQ,RES> implements DataTransformer<REQ,RES> {
+    // common logic here
+    protected REQ listing;
+
+    BaseTransformer(REQ listing) {
         this.listing = listing;
+    }
+
+    @Override
+    public void setImages(List<String> images) {
+        if (listing instanceof CommonListingFields) {
+            ((CommonListingFields) listing).setImages(images);
+        }
     }
 
     @Override

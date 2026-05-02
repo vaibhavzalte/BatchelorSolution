@@ -33,9 +33,7 @@ public class ListingService {
     @Autowired
     private FileStorageService fileStorageService;
 
-    public <REQ,RES> RES createListingWithImages(DataTransformer<REQ,RES> transformer, List<MultipartFile> images ,String typName) {
-//        RES payload = transformer.getPayload();
-
+    public <E,D> D createListingWithImages(DataTransformer<E,D> transformer, List<MultipartFile> images) {
         if (images != null && !images.isEmpty()) {
             try {
                 List<String> imageUrls = fileStorageService.storeFiles(images);
@@ -59,22 +57,23 @@ public class ListingService {
         }
     }
 
-        public <REQ,RES> RES createListing(DataTransformer<REQ,RES> transformer) {
-        ListingsEntity entity = listingsRepository.findByIdAndTypeAndStatus(transformer.getPrimaryId(), transformer.getType(), "ACTIVE");
+        public <E,D> D createListing(DataTransformer<E,D> transformer) {
+        ListingsEntity entity = listingsRepository.findByIdAndTypeAndStatus(transformer.getId(), transformer.getType(), "ACTIVE");
         if (entity != null) {
-            throw new RuntimeException("Listing already exists with primary id: " + transformer.getPrimaryId() + " and type: " + transformer.getType());
+            throw new RuntimeException("Listing already exists with id: " + transformer.getId() + " and type: " + transformer.getType());
         }
         ListingsEntity newEntity = ListingsEntity.builder()
                 .type(transformer.getType())
+                .subType(transformer.getSubType())
+                .primaryId(transformer.getPrimaryId())
+                .secondaryId(transformer.getSecondaryId())
                 .latitude(transformer.getLatitude())
                 .longitude(transformer.getLongitude())
-                .payload(getJsonString(transformer.getPayload()))  // i want here RoomDTO payload only
+                .payload(getJsonString(transformer.toDTO()))
                 .status("Active")
                 .build();
         listingsRepository.save(newEntity);
-        return mapToDto(newEntity,(Class<RES>)transformer.getResponseClass());
-//        return mapToDto(newEntity, (Class<RES>) transformer.getPayload().getClass());
-
+        return mapToDto(newEntity,transformer.getDtoClass());
     }
 
     private String getJsonString(Object object) {

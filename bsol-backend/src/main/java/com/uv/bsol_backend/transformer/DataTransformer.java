@@ -1,9 +1,10 @@
 package com.uv.bsol_backend.transformer;
 
 import java.util.List;
-
-public interface DataTransformer<REQ,RES> {
-    Long getPrimaryId();
+//entity DTO
+public interface DataTransformer<E,D> {
+    Long getId();
+    String getPrimaryId();
 
     String getSecondaryId();
 
@@ -11,14 +12,15 @@ public interface DataTransformer<REQ,RES> {
 
     String getSubType();
 
-    RES getPayload();
-
+//    RES getPayload();
+    E getEntity();     // original entity
+    D toDTO();         // mapped DTO
     Double getLatitude();
 
     Double getLongitude();
 
     void setImages(List<String> images);
 
-    Class<?> getTransactionClass();
-    Class<?> getResponseClass();
+    Class<?> getEntityClass();
+    Class<D> getDtoClass();
 }

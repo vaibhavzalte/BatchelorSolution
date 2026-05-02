@@ -1,15 +1,19 @@
 package com.uv.bsol_backend.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RoomDTO {
     // 🔹 Basic Info
-    private String title;   // e.g. "1BHK Room for Boys in Kothrud"
+    private String title;
 
     private String description;
 
@@ -18,7 +22,6 @@ public class RoomDTO {
 
     private String availableFor; // BOYS / GIRLS / FAMILY
 
-    private Boolean furnished; // true / false
 
     private Integer totalRooms;
 
@@ -34,7 +37,7 @@ public class RoomDTO {
     private Double brokerage;
 
     // 🔹 Amenities
-    private List<String> amenities; // wifi,parking,ac,foodIncluded,attachedBathroom
+    private List<String> amenities;
 
     // 🔹 Location
     private String address;

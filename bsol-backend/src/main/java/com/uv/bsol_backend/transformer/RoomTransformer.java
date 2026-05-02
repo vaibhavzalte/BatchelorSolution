@@ -12,11 +12,6 @@ public class RoomTransformer extends BaseTransformer<Room, RoomDTO> {
 
 
     @Override
-    public Long getPrimaryId() {
-        return null;
-    }
-
-    @Override
     public String getType() {
         return LISTING_TYPE;
     }
@@ -26,14 +21,14 @@ public class RoomTransformer extends BaseTransformer<Room, RoomDTO> {
         return listing.getRoomType();
     }
 
+
     @Override
-    public RoomDTO getPayload() {
+    public RoomDTO toDTO() {
         return RoomDTO.builder()
                 .title(listing.getTitle())
                 .description(listing.getDescription())
                 .roomType(listing.getRoomType())
                 .availableFor(listing.getAvailableFor())
-                .furnished(listing.getFurnished())
                 .totalRooms(listing.getTotalRooms())
                 .availableRooms(listing.getAvailableRooms())
                 .rent(listing.getRent())
@@ -44,27 +39,23 @@ public class RoomTransformer extends BaseTransformer<Room, RoomDTO> {
                 .address(listing.getAddress())
                 .city(listing.getCity())
                 .area(listing.getArea())
+                .images(listing.getImages())
+                .ownerContact(listing.getOwnerContact())
+                .ownerName(listing.getOwnerName())
+                .ownerEmail(listing.getOwnerEmail())
                 .build();
     }
 
 
     @Override
-    public Double getLatitude() {
-        return listing.getLatitude();
-    }
-
-    @Override
-    public Double getLongitude() {
-        return listing.getLongitude();
-    }
-
-    @Override
-    public Class<RoomDTO> getTransactionClass() {
+    public Class<RoomDTO> getEntityClass() {
         return RoomDTO.class;
     }
 
     @Override
-    public Class<?> getResponseClass() {
-        return Room.class;
+    public Class<RoomDTO> getDtoClass() {
+        return RoomDTO.class;
     }
+
+
 }

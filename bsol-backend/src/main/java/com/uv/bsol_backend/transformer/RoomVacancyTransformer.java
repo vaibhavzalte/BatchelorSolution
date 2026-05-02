@@ -9,10 +9,6 @@ public class RoomVacancyTransformer extends BaseTransformer<RoomVacancy, RoomVac
         super(roomVacancy);
     }
 
-    @Override
-    public Long getPrimaryId() {
-        return null;
-    }
 
     @Override
     public String getType() {
@@ -20,28 +16,19 @@ public class RoomVacancyTransformer extends BaseTransformer<RoomVacancy, RoomVac
     }
 
     @Override
-    public RoomVacancy getPayload() {
+    public RoomVacancy toDTO() {
         return null;
     }
 
-    @Override
-    public Double getLatitude() {
-        return listing.getLatitude();
-    }
 
     @Override
-    public Double getLongitude() {
-        return listing.getLongitude();
-    }
-
-
-    @Override
-    public Class<?> getTransactionClass() {
+    public Class<?> getEntityClass() {
         return RoomVacancy.class;
     }
 
     @Override
-    public Class<?> getResponseClass() {
+    public Class<RoomVacancy> getDtoClass() {
         return null;
     }
+
 }

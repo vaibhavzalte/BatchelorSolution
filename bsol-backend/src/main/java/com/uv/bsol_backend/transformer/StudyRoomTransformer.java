@@ -9,10 +9,6 @@ public class StudyRoomTransformer extends BaseTransformer<StudyRoom,StudyRoom> {
         super(studyRoom);
     }
 
-    @Override
-    public Long getPrimaryId() {
-        return listing.getId();
-    }
 
     @Override
     public String getType() {
@@ -25,27 +21,19 @@ public class StudyRoomTransformer extends BaseTransformer<StudyRoom,StudyRoom> {
     }
 
     @Override
-    public StudyRoom getPayload() {
+    public StudyRoom toDTO() {
         return null;
     }
 
     @Override
-    public Double getLatitude() {
+    public Class<?> getEntityClass() {
         return null;
     }
 
     @Override
-    public Double getLongitude() {
+    public Class<StudyRoom> getDtoClass() {
         return null;
     }
 
-    @Override
-    public Class<StudyRoom> getTransactionClass() {
-        return StudyRoom.class;
-    }
 
-    @Override
-    public Class<?> getResponseClass() {
-        return null;
-    }
 }

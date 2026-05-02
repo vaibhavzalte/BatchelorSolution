@@ -9,10 +9,6 @@ public class FoodStallTransformer extends BaseTransformer<FoodStall,FoodStall> {
         super(listing);
     }
 
-    @Override
-    public Long getPrimaryId() {
-        return null;
-    }
 
     @Override
     public String getSecondaryId() {
@@ -30,9 +26,10 @@ public class FoodStallTransformer extends BaseTransformer<FoodStall,FoodStall> {
     }
 
     @Override
-    public FoodStall getPayload() {
-        return listing;
+    public FoodStall toDTO() {
+        return null;
     }
+
 
     @Override
     public Double getLatitude() {
@@ -45,12 +42,13 @@ public class FoodStallTransformer extends BaseTransformer<FoodStall,FoodStall> {
     }
 
     @Override
-    public Class<?> getTransactionClass() {
+    public Class<?> getEntityClass() {
         return FoodStall.class;
     }
 
     @Override
-    public Class<?> getResponseClass() {
+    public Class<FoodStall> getDtoClass() {
         return null;
     }
+
 }

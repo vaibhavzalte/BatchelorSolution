@@ -1,8 +1,5 @@
 package com.uv.bsol_backend.entity;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.*;
 import java.util.List;
 
@@ -13,11 +10,9 @@ import java.util.List;
 @AllArgsConstructor
 public class Room extends CommonListingFields {
 
-//    private String type = "Room";
-
 
     // 🔹 Basic Info
-    private String title;   // e.g. "1BHK Room for Boys in Kothrud"
+    private String title;
 
     private String description;
 
@@ -25,8 +20,6 @@ public class Room extends CommonListingFields {
     private String roomType;   // 1RK, 1BHK, 2BHK
 
     private String availableFor; // BOYS / GIRLS / FAMILY
-
-    private Boolean furnished; // true / false
 
     private Integer totalRooms;
 
@@ -42,7 +35,7 @@ public class Room extends CommonListingFields {
     private Double brokerage;
 
     // 🔹 Amenities
-    private List<String> amenities; // wifi,parking,ac,foodIncluded,attachedBathroom
+    private List<String> amenities;
 
     // 🔹 Location
     private String address;
@@ -58,5 +51,9 @@ public class Room extends CommonListingFields {
     private String ownerContact;
 
     private String ownerEmail;
+
+    // comming soon
+    private List<String> rules;
+    private Double rating;
 
 }

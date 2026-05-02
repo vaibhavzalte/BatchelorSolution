@@ -8,10 +8,6 @@ public class MessTransformer extends BaseTransformer<Mess,Mess> {
         super(listing);
     }
 
-    @Override
-    public Long getPrimaryId() {
-        return null;
-    }
 
     @Override
     public String getSecondaryId() {
@@ -29,27 +25,19 @@ public class MessTransformer extends BaseTransformer<Mess,Mess> {
     }
 
     @Override
-    public Mess getPayload() {
-        return listing;
-    }
-
-    @Override
-    public Double getLatitude() {
+    public Mess toDTO() {
         return null;
     }
 
     @Override
-    public Double getLongitude() {
+    public Class<?> getEntityClass() {
         return null;
     }
 
     @Override
-    public Class<?> getTransactionClass() {
+    public Class<Mess> getDtoClass() {
         return null;
     }
 
-    @Override
-    public Class<?> getResponseClass() {
-        return null;
-    }
+
 }

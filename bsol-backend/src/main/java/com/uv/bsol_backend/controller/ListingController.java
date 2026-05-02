@@ -31,23 +31,6 @@ public class ListingController {
     @PostMapping(
             value = "/{mgmtName}/{typeName}",
             produces = {"application/json;charset=utf-8"},
-            consumes = {"application/json;charset=utf-8"}
-    )
-    public ResponseEntity<Object> createListing(
-            @PathVariable String mgmtName,
-            @PathVariable String typeName,
-            @Valid @RequestBody JsonNode body
-    ) {
-        log.info("Received request to create listing for mgmtName: {}, typeName: {}, with body: {}", mgmtName, typeName, body);
-        DataTransformer<?,?> transformer = dataTransformerFactory.getTransformerFor(ListingType.fromValue(typeName), body.toString());
-        Object o = listingService.createListing(transformer);
-        log.info("Created primary id : {}", transformer.getPrimaryId());
-        return new ResponseEntity<>(o, HttpStatus.CREATED);
-    }
-
-    @PostMapping(
-            value = "/{mgmtName}/{typeName}/multipart",
-            produces = {"application/json;charset=utf-8"},
             consumes = {"multipart/form-data"}
     )
     public ResponseEntity<Object> createListingWithImages(
@@ -56,10 +39,9 @@ public class ListingController {
             @RequestPart("listing") String body,
             @RequestPart(value = "images", required = false) List<MultipartFile> images
     ) {
-
         log.info("Received request to create listing with images for mgmtName: {}, typeName: {}", mgmtName, typeName);
         DataTransformer<?,?> transformer = dataTransformerFactory.getTransformerFor(ListingType.fromValue(typeName), body);
-        Object o = listingService.createListingWithImages(transformer, images,typeName);
+        Object o = listingService.createListingWithImages(transformer, images);
         return new ResponseEntity<>(o, HttpStatus.CREATED);
     }
 
@@ -75,7 +57,7 @@ public class ListingController {
     ) {
         log.info("Received request to get all listing of type {} with these parameters {}", typeName, allParams);
         DataTransformer<?,?> transformer = dataTransformerFactory.getTransformerFor(ListingType.fromValue(typeName), null);
-        List<Object> listings = (List<Object>) listingService.getListingsByTypeAndFilters(transformer.getResponseClass(), transformer.getType(), allParams);
+        List<Object> listings = (List<Object>) listingService.getListingsByTypeAndFilters(transformer.getEntityClass(), transformer.getType(), allParams);
         return new ResponseEntity<>(listings, HttpStatus.OK);
     }
 

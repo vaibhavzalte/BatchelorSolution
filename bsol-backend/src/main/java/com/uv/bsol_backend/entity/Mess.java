@@ -1,10 +1,7 @@
 package com.uv.bsol_backend.entity;
 
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
 @Getter
@@ -12,6 +9,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Mess extends CommonListingFields {
 
 

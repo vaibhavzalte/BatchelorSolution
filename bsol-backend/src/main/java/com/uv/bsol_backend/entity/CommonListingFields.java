@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
 import java.util.List;
 
 @Getter
@@ -13,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class CommonListingFields {
-
+    protected Long id;
     protected String type;
     protected String subType;
     protected String primaryId;

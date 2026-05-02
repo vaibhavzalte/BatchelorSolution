@@ -22,7 +22,7 @@ public class RoomVacancyTransformer extends BaseTransformer<RoomVacancy, RoomVac
 
 
     @Override
-    public Class<?> getEntityClass() {
+    public Class<RoomVacancy> getEntityClass() {
         return RoomVacancy.class;
     }
 

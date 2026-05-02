@@ -1,6 +1,7 @@
 package com.uv.bsol_backend.service;
 
-import com.uv.bsol_backend.entity.*;
+import com.uv.bsol_backend.entity.CommonListingFields;
+import com.uv.bsol_backend.entity.ListingsEntity;
 import com.uv.bsol_backend.repository.ListingsRepository;
 import com.uv.bsol_backend.transformer.DataTransformer;
 import jakarta.persistence.EntityManager;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.ObjectMapper;
-
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +33,16 @@ public class ListingService {
     @Autowired
     private FileStorageService fileStorageService;
 
-    public <E,D> D createListingWithImages(DataTransformer<E,D> transformer, List<MultipartFile> images) {
+    private static void addFixedQueryCondition(String paramName, Map<String, String> allParams, StringBuilder query, Map<String, Object> filterValues) {
+        String paramValue = allParams.get(paramName);
+        if (paramValue != null && !paramValue.isEmpty()) {
+            query.append(" AND  t1.").append(paramName).append(" = :").append(paramName);
+            filterValues.put(paramName, paramValue);
+            allParams.remove(paramName);
+        }
+    }
+
+    public <E extends CommonListingFields, D> E createListingWithImages(DataTransformer<E, D> transformer, List<MultipartFile> images) {
         if (images != null && !images.isEmpty()) {
             try {
                 List<String> imageUrls = fileStorageService.storeFiles(images);
@@ -47,17 +56,7 @@ public class ListingService {
         return createListing(transformer);
     }
 
-
-    private static void addFixedQueryCondition(String paramName, Map<String, String> allParams, StringBuilder query, Map<String, Object> filterValues) {
-        String paramValue = allParams.get(paramName);
-        if (paramValue != null && !paramValue.isEmpty()) {
-            query.append(" AND  t1.").append(paramName).append(" = :").append(paramName);
-            filterValues.put(paramName, paramValue);
-            allParams.remove(paramName);
-        }
-    }
-
-        public <E,D> D createListing(DataTransformer<E,D> transformer) {
+    public <E extends CommonListingFields, D> E createListing(DataTransformer<E, D> transformer) {
         ListingsEntity entity = listingsRepository.findByIdAndTypeAndStatus(transformer.getId(), transformer.getType(), "ACTIVE");
         if (entity != null) {
             throw new RuntimeException("Listing already exists with id: " + transformer.getId() + " and type: " + transformer.getType());
@@ -72,23 +71,34 @@ public class ListingService {
                 .payload(getJsonString(transformer.toDTO()))
                 .status("Active")
                 .build();
-        listingsRepository.save(newEntity);
-        return mapToDto(newEntity,transformer.getDtoClass());
+        ListingsEntity listingDB = listingsRepository.save(newEntity);
+        System.out.println(listingDB.toString());
+        return mapToDto(listingDB, transformer.getEntityClass());
     }
 
     private String getJsonString(Object object) {
         return objectMapper.writeValueAsString(object);
     }
 
-    private <T> T mapToDto(ListingsEntity entity, Class<T> dtoClassName) {
+    private <T extends CommonListingFields> T mapToDto(ListingsEntity entity, Class<T> dtoClass) {
         T dto = null;
+
         if (entity != null && entity.getPayload() != null) {
-            dto = objectMapper.readValue(entity.getPayload(), dtoClassName);
+            dto = objectMapper.readValue(entity.getPayload(), dtoClass);
+            dto.setId(entity.getId());
+            dto.setPrimaryId(entity.getPrimaryId());
+            dto.setSecondaryId(entity.getSecondaryId());
+            dto.setType(entity.getType());
+            dto.setSubType(entity.getSubType());
+            dto.setStatus(entity.getStatus());
+            dto.setLatitude(entity.getLatitude());
+            dto.setLongitude(entity.getLongitude());
         }
+
         return dto;
     }
 
-    public <T> List<T> getListingsByTypeAndFilters(Class<T> clazz, String type, Map<String, String> allParams) {
+    public <T extends CommonListingFields> List<T> getListingsByTypeAndFilters(Class<T> clazz, String type, Map<String, String> allParams) {
         log.info("get listing sql creating...");
         StringBuilder query = new StringBuilder("SELECT DISTINCT t1 FROM ListingsEntity t1 WHERE type=:type");
         Map<String, Object> filterParams = addFilterConditions(query, allParams);

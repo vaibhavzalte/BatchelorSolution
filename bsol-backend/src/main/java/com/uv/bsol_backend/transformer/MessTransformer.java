@@ -2,7 +2,7 @@ package com.uv.bsol_backend.transformer;
 
 import com.uv.bsol_backend.entity.Mess;
 
-public class MessTransformer extends BaseTransformer<Mess,Mess> {
+public class MessTransformer extends BaseTransformer<Mess, Mess> {
 
     MessTransformer(Mess listing) {
         super(listing);
@@ -30,7 +30,7 @@ public class MessTransformer extends BaseTransformer<Mess,Mess> {
     }
 
     @Override
-    public Class<?> getEntityClass() {
+    public Class<Mess> getEntityClass() {
         return null;
     }
 

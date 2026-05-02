@@ -2,7 +2,7 @@ package com.uv.bsol_backend.transformer;
 
 import com.uv.bsol_backend.entity.FoodStall;
 
-public class FoodStallTransformer extends BaseTransformer<FoodStall,FoodStall> {
+public class FoodStallTransformer extends BaseTransformer<FoodStall, FoodStall> {
     public static final String LISTING_TYPE = "FoodStall";
 
     FoodStallTransformer(FoodStall listing) {
@@ -42,7 +42,7 @@ public class FoodStallTransformer extends BaseTransformer<FoodStall,FoodStall> {
     }
 
     @Override
-    public Class<?> getEntityClass() {
+    public Class<FoodStall> getEntityClass() {
         return FoodStall.class;
     }
 

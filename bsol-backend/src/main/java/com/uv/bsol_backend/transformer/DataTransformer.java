@@ -1,9 +1,14 @@
 package com.uv.bsol_backend.transformer;
 
+
+import com.uv.bsol_backend.entity.CommonListingFields;
+
 import java.util.List;
+
 //entity DTO
-public interface DataTransformer<E,D> {
+public interface DataTransformer<E extends CommonListingFields, D> {
     Long getId();
+
     String getPrimaryId();
 
     String getSecondaryId();
@@ -12,15 +17,18 @@ public interface DataTransformer<E,D> {
 
     String getSubType();
 
-//    RES getPayload();
+    //    RES getPayload();
     E getEntity();     // original entity
+
     D toDTO();         // mapped DTO
+
     Double getLatitude();
 
     Double getLongitude();
 
     void setImages(List<String> images);
 
-    Class<?> getEntityClass();
+    Class<E> getEntityClass();
+
     Class<D> getDtoClass();
 }

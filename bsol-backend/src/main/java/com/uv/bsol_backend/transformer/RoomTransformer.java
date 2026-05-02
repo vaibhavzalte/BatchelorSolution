@@ -16,11 +16,6 @@ public class RoomTransformer extends BaseTransformer<Room, RoomDTO> {
         return LISTING_TYPE;
     }
 
-    @Override
-    public String getSubType() {
-        return listing.getRoomType();
-    }
-
 
     @Override
     public RoomDTO toDTO() {
@@ -48,8 +43,8 @@ public class RoomTransformer extends BaseTransformer<Room, RoomDTO> {
 
 
     @Override
-    public Class<RoomDTO> getEntityClass() {
-        return RoomDTO.class;
+    public Class<Room> getEntityClass() {
+        return Room.class;
     }
 
     @Override

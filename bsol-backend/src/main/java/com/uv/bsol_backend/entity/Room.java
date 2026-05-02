@@ -1,6 +1,7 @@
 package com.uv.bsol_backend.entity;
 
 import lombok.*;
+
 import java.util.List;
 
 @Getter
@@ -52,8 +53,8 @@ public class Room extends CommonListingFields {
 
     private String ownerEmail;
 
-    // comming soon
-    private List<String> rules;
-    private Double rating;
+    // coming soon
+//    private List<String> rules;
+//    private Double rating;
 
 }

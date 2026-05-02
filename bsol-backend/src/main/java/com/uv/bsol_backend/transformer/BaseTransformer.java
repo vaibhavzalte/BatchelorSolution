@@ -13,13 +13,13 @@ public abstract class BaseTransformer<E extends CommonListingFields, D> implemen
     }
 
     @Override
-    public Long getId(){
+    public Long getId() {
         return null;
     }
 
     @Override
     public String getPrimaryId() {
-        return null;
+        return listing.getPrimaryId();
     }
 
     @Override
@@ -34,12 +34,12 @@ public abstract class BaseTransformer<E extends CommonListingFields, D> implemen
 
     @Override
     public String getSecondaryId() {
-        return "";
+        return listing.getSecondaryId();
     }
 
     @Override
     public String getSubType() {
-        return null;
+        return listing.getSubType();
     }
 
     @Override

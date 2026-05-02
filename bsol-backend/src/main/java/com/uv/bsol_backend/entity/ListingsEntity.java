@@ -15,6 +15,7 @@ import java.time.OffsetDateTime;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class ListingsEntity {
 
     @Id

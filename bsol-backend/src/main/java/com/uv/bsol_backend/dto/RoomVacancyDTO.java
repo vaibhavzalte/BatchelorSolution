@@ -1,19 +1,18 @@
-package com.uv.bsol_backend.entity;
+package com.uv.bsol_backend.dto;
 
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
-@Getter
-@Setter
-@SuperBuilder
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoomVacancy extends CommonListingFields {
-
+@ToString
+public class RoomVacancyDTO {
+    protected List<String> images;
     // 🔹 Basic Info
     private String title;
     private String description;
@@ -45,8 +44,4 @@ public class RoomVacancy extends CommonListingFields {
     private String ownerContact;
 
     private String ownerEmail;
-
-    // coming soon
-//    private List<String> rules;
-//    private Double rating;
 }

@@ -58,6 +58,53 @@ public class ListingController {
         return new ResponseEntity<>(listings, HttpStatus.OK);
     }
 
+    @GetMapping(
+            value = "/{mgmtName}/{typeName}/{id}",
+            produces = {"application/json;charset=utf-8"}
+    )
+    public ResponseEntity<Object> getListingById(
+            @PathVariable String mgmtName,
+            @PathVariable String typeName,
+            @PathVariable Long id
+    ) {
+        log.info("Received request to get listing by id: {} for type: {}", id, typeName);
+        DataTransformer<?, ?> transformer = dataTransformerFactory.getTransformerFor(ListingType.fromValue(typeName), null);
+        Object listing = listingService.getListingById(id, transformer.getEntityClass());
+        return new ResponseEntity<>(listing, HttpStatus.OK);
+    }
+
+    @PutMapping(
+            value = "/{mgmtName}/{typeName}/{id}",
+            produces = {"application/json;charset=utf-8"},
+            consumes = {"multipart/form-data"}
+    )
+    public ResponseEntity<Object> updateListingById(
+            @PathVariable String mgmtName,
+            @PathVariable String typeName,
+            @PathVariable Long id,
+            @RequestPart("listing") String body,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images
+    ) {
+        log.info("Received request to update listing id: {} for type: {}", id, typeName);
+        DataTransformer<?, ?> transformer = dataTransformerFactory.getTransformerFor(ListingType.fromValue(typeName), body);
+        Object updated = listingService.updateListingById(id, transformer, images);
+        return new ResponseEntity<>(updated, HttpStatus.OK);
+    }
+
+    @DeleteMapping(
+            value = "/{mgmtName}/{typeName}/{id}"
+    )
+    public ResponseEntity<Void> deleteListingById(
+            @PathVariable String mgmtName,
+            @PathVariable String typeName,
+            @PathVariable Long id
+    ) {
+        log.info("Received request to soft-delete listing id: {} for type: {}", id, typeName);
+        DataTransformer<?, ?> transformer = dataTransformerFactory.getTransformerFor(ListingType.fromValue(typeName), null);
+        listingService.deleteListingById(transformer,id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
     @GetMapping
     public String getListings() {
         return "Application is running";

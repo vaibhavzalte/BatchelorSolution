@@ -1,8 +1,9 @@
 package com.uv.bsol_backend.transformer;
 
+import com.uv.bsol_backend.dto.RoomVacancyDTO;
 import com.uv.bsol_backend.entity.RoomVacancy;
 
-public class RoomVacancyTransformer extends BaseTransformer<RoomVacancy, RoomVacancy> {
+public class RoomVacancyTransformer extends BaseTransformer<RoomVacancy, RoomVacancyDTO> {
     public static final String LISTING_TYPE = "RoomVacancy";
 
     public RoomVacancyTransformer(RoomVacancy roomVacancy) {
@@ -16,8 +17,27 @@ public class RoomVacancyTransformer extends BaseTransformer<RoomVacancy, RoomVac
     }
 
     @Override
-    public RoomVacancy toDTO() {
-        return null;
+    public RoomVacancyDTO toDTO() {
+        return RoomVacancyDTO.builder()
+                .title(listing.getTitle())
+                .description(listing.getDescription())
+                .roomType(listing.getRoomType())
+                .totalVacancies(listing.getTotalVacancies())
+                .preferredTenant(listing.getPreferredTenant())
+                .rent(listing.getRent())
+                .deposit(listing.getDeposit())
+                .maintenance(listing.getMaintenance())
+                .brokerage(listing.getBrokerage())
+                .amenities(listing.getAmenities())
+                .availableFrom(listing.getAvailableFrom())
+                .address(listing.getAddress())
+                .city(listing.getCity())
+                .area(listing.getArea())
+                .ownerContact(listing.getOwnerContact())
+                .ownerName(listing.getOwnerName())
+                .ownerEmail(listing.getOwnerEmail())
+                .images(listing.getImages())
+                .build();
     }
 
 
@@ -27,8 +47,8 @@ public class RoomVacancyTransformer extends BaseTransformer<RoomVacancy, RoomVac
     }
 
     @Override
-    public Class<RoomVacancy> getDtoClass() {
-        return null;
+    public Class<RoomVacancyDTO> getDtoClass() {
+        return RoomVacancyDTO.class;
     }
 
 }

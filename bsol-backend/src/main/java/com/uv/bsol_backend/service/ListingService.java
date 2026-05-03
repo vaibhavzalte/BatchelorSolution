@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -98,6 +99,48 @@ public class ListingService {
         return dto;
     }
 
+    public <T extends CommonListingFields> T getListingById(Long id, Class<T> clazz) {
+        Optional<ListingsEntity> entityOpt = listingsRepository.findById(id);
+        ListingsEntity entity = entityOpt.orElseThrow(() -> new RuntimeException("Listing not found with id: " + id));
+        return mapToDto(entity, clazz);
+    }
+
+    public <E extends CommonListingFields, D> E updateListingById(Long id, DataTransformer<E, D> transformer, List<MultipartFile> images) {
+        ListingsEntity entity = listingsRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Listing not found with id: " + id));
+        if (images != null && !images.isEmpty()) {
+            try {
+                List<String> imageUrls = fileStorageService.storeFiles(images);
+                transformer.setImages(imageUrls);
+            } catch (java.io.IOException e) {
+                log.error("Failed to store images during update", e);
+                throw new RuntimeException("Failed to store images", e);
+            }
+        }
+        ListingsEntity updated = entity.toBuilder()
+                .subType(transformer.getSubType())
+                .primaryId(transformer.getPrimaryId())
+                .secondaryId(transformer.getSecondaryId())
+                .latitude(transformer.getLatitude())
+                .longitude(transformer.getLongitude())
+                .payload(getJsonString(transformer.toDTO()))
+                .build();
+        ListingsEntity saved = listingsRepository.save(updated);
+        log.info("Updated listing with id: {}", id);
+        return mapToDto(saved, transformer.getEntityClass());
+    }
+
+    public <E extends CommonListingFields,D> void deleteListingById(DataTransformer<E,D> transformer, Long id) {
+        ListingsEntity entity = listingsRepository.findByIdAndTypeAndStatus(id,transformer.getType(),"Active");
+        if(entity ==null)
+        {
+            log.info("Listing not found with id: {}",id);
+            throw new RuntimeException("Listing not found with id: " + id);
+        }
+        entity.setStatus("InActive");
+        listingsRepository.save(entity);
+    }
+
     public <T extends CommonListingFields> List<T> getListingsByTypeAndFilters(Class<T> clazz, String type, Map<String, String> allParams) {
         log.info("get listing sql creating...");
         StringBuilder query = new StringBuilder("SELECT DISTINCT t1 FROM ListingsEntity t1 WHERE type=:type");
@@ -121,7 +164,6 @@ public class ListingService {
     private Map<String, Object> addFilterConditions(StringBuilder query, Map<String, String> allParams) {
         Map<String, Object> filterValues = new HashMap<>();
         if (allParams != null && !allParams.isEmpty()) {
-            addFixedQueryCondition("createdBy", allParams, query, filterValues);
             addFixedQueryCondition("subType", allParams, query, filterValues);
             addFixedQueryCondition("secondaryId", allParams, query, filterValues);
             addFixedQueryCondition("status", allParams, query, filterValues);

@@ -1,14 +1,17 @@
-package com.uv.bsol_backend.entity;
+package com.uv.bsol_backend.dto;
 
 import lombok.*;
 
-@Getter
-@Setter
+import java.util.List;
+
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Mess extends CommonListingFields {
+public class MessDTO {
+
+    protected List<String> images;
 
     // 🔹 Basic Info
     private String messName;
@@ -42,5 +45,4 @@ public class Mess extends CommonListingFields {
     private String ownerContact;
 
     private String ownerEmail;
-
 }

@@ -1,12 +1,13 @@
 package com.uv.bsol_backend.entity;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Room extends CommonListingFields {

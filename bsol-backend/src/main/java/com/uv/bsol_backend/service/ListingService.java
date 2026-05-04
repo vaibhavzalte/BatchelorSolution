@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -73,7 +72,6 @@ public class ListingService {
                 .status("Active")
                 .build();
         ListingsEntity listingDB = listingsRepository.save(newEntity);
-        System.out.println(listingDB.toString());
         return mapToDto(listingDB, transformer.getEntityClass());
     }
 
@@ -99,15 +97,21 @@ public class ListingService {
         return dto;
     }
 
-    public <T extends CommonListingFields> T getListingById(Long id, Class<T> clazz) {
-        Optional<ListingsEntity> entityOpt = listingsRepository.findById(id);
-        ListingsEntity entity = entityOpt.orElseThrow(() -> new RuntimeException("Listing not found with id: " + id));
+    public <T extends CommonListingFields> T getListingById(Long id, String type, Class<T> clazz) {
+        ListingsEntity entity = listingsRepository.findByIdAndTypeAndStatus(id, type, "Active");
+        if (entity == null) {
+            log.info("Listing not found with id: {}", id);
+            throw new RuntimeException("Listing not found with id: " + id);
+        }
         return mapToDto(entity, clazz);
     }
 
-    public <E extends CommonListingFields, D> E updateListingById(Long id, DataTransformer<E, D> transformer, List<MultipartFile> images) {
-        ListingsEntity entity = listingsRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Listing not found with id: " + id));
+    public <E extends CommonListingFields, D> E updateListingById(Long id, String type, DataTransformer<E, D> transformer, List<MultipartFile> images) {
+        ListingsEntity entity = listingsRepository.findByIdAndTypeAndStatus(id, type, "Active");
+        if (entity == null) {
+            log.info("Listing not found with id: {}", id);
+            throw new RuntimeException("Listing not found with id: " + id);
+        }
         if (images != null && !images.isEmpty()) {
             try {
                 List<String> imageUrls = fileStorageService.storeFiles(images);
@@ -130,11 +134,10 @@ public class ListingService {
         return mapToDto(saved, transformer.getEntityClass());
     }
 
-    public <E extends CommonListingFields,D> void deleteListingById(DataTransformer<E,D> transformer, Long id) {
-        ListingsEntity entity = listingsRepository.findByIdAndTypeAndStatus(id,transformer.getType(),"Active");
-        if(entity ==null)
-        {
-            log.info("Listing not found with id: {}",id);
+    public <E extends CommonListingFields, D> void deleteListingById(DataTransformer<E, D> transformer, Long id) {
+        ListingsEntity entity = listingsRepository.findByIdAndTypeAndStatus(id, transformer.getType(), "Active");
+        if (entity == null) {
+            log.info("Listing not found with id: {}", id);
             throw new RuntimeException("Listing not found with id: " + id);
         }
         entity.setStatus("InActive");

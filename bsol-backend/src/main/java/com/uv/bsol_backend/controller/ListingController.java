@@ -69,7 +69,7 @@ public class ListingController {
     ) {
         log.info("Received request to get listing by id: {} for type: {}", id, typeName);
         DataTransformer<?, ?> transformer = dataTransformerFactory.getTransformerFor(ListingType.fromValue(typeName), null);
-        Object listing = listingService.getListingById(id, transformer.getEntityClass());
+        Object listing = listingService.getListingById(id,typeName,transformer.getEntityClass());
         return new ResponseEntity<>(listing, HttpStatus.OK);
     }
 
@@ -87,7 +87,7 @@ public class ListingController {
     ) {
         log.info("Received request to update listing id: {} for type: {}", id, typeName);
         DataTransformer<?, ?> transformer = dataTransformerFactory.getTransformerFor(ListingType.fromValue(typeName), body);
-        Object updated = listingService.updateListingById(id, transformer, images);
+        Object updated = listingService.updateListingById(id,typeName,transformer, images);
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 

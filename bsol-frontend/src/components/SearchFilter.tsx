@@ -15,7 +15,35 @@ import {
   Library,
   SlidersHorizontal,
   X,
+  Target,
 } from "lucide-react";
+import { useRef } from "react";
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const INDIAN_CITIES = [
+  "Pune",
+  "Nashik",
+  "Mumbai",
+  "Nagpur",
+  "Bangalore",
+  "Hyderabad",
+  "Delhi",
+  "Chennai",
+  "Kolkata",
+  "Ahmedabad",
+  "Surat",
+  "Jaipur",
+  "Lucknow",
+  "Kanpur",
+  "Indore",
+  "Thane",
+  "Bhopal",
+  "Visakhapatnam",
+  "Pimpri-Chinchwad",
+  "Patna",
+  "Vadodara",
+];
 
 // ─── Category definitions ─────────────────────────────────────────────────────
 
@@ -92,15 +120,60 @@ interface SearchFilterProps {
 
 export default function SearchFilter({ onSearch, currentSearch }: SearchFilterProps) {
   const { activeCategory, setActiveCategory } = useCategory();
+
+  // Local state for the new layout
+  const [city, setCity] = useState("Pune");
+  const [isCityOpen, setIsCityOpen] = useState(false);
+  const [cityQuery, setCityQuery] = useState("");
+  const cityDropdownRef = useRef<HTMLDivElement>(null);
+  const freshnessDropdownRef = useRef<HTMLDivElement>(null);
+  const rentSortDropdownRef = useRef<HTMLDivElement>(null);
+  const availableForDropdownRef = useRef<HTMLDivElement>(null);
+
+  const [isFreshnessOpen, setIsFreshnessOpen] = useState(false);
+  const [isRentSortOpen, setIsRentSortOpen] = useState(false);
+  const [isAvailableForOpen, setIsAvailableForOpen] = useState(false);
+
   const [keyword, setKeyword] = useState(currentSearch.keyword);
-  const [location, setLocation] = useState(currentSearch.location);
-  const [filters, setFilters] = useState<Record<string, string | number | boolean>>(currentSearch.filters);
+  const [freshness, setFreshness] = useState("24h");
+  const [rentSort, setRentSort] = useState("");
+  const [availableFor, setAvailableFor] = useState("");
+
+  const [useLocation, setUseLocation] = useState(false);
+  const [distance, setDistance] = useState("10km");
+
   const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<Record<string, string | number | boolean>>(currentSearch.filters);
+
+  // Click outside to close city dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (cityDropdownRef.current && !cityDropdownRef.current.contains(event.target as Node)) {
+        setIsCityOpen(false);
+      }
+      if (freshnessDropdownRef.current && !freshnessDropdownRef.current.contains(event.target as Node)) {
+        setIsFreshnessOpen(false);
+      }
+      if (rentSortDropdownRef.current && !rentSortDropdownRef.current.contains(event.target as Node)) {
+        setIsRentSortOpen(false);
+      }
+      if (availableForDropdownRef.current && !availableForDropdownRef.current.contains(event.target as Node)) {
+        setIsAvailableForOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Reset local filter state when category changes
   useEffect(() => {
     setFilters({});
     setKeyword("");
+    setFreshness("24h");
+    setRentSort("");
+    setAvailableFor("");
+    setDistance("10km");
+    setUseLocation(false);
     setShowFilters(false);
   }, [activeCategory]);
 
@@ -122,13 +195,22 @@ export default function SearchFilter({ onSearch, currentSearch }: SearchFilterPr
   };
 
   const handleSearch = useCallback(() => {
-    // Clean filters: remove falsy values except meaningful zeros/false
-    const clean: Record<string, string | number | boolean> = {};
-    Object.entries(filters).forEach(([k, v]) => {
-      if (v !== "" && v !== undefined) clean[k] = v;
+    const combinedFilters = { ...filters };
+    if (freshness) combinedFilters.freshness = freshness;
+    if (rentSort) combinedFilters.rentSort = rentSort;
+    if (availableFor) combinedFilters.availableFor = availableFor;
+
+    if (useLocation) {
+      combinedFilters.distance = distance;
+      combinedFilters.useGeo = true;
+    }
+
+    onSearch({
+      keyword: keyword.trim(),
+      location: city.trim(),
+      filters: combinedFilters
     });
-    onSearch({ keyword: keyword.trim(), location: location.trim(), filters: clean });
-  }, [keyword, location, filters, onSearch]);
+  }, [keyword, city, freshness, rentSort, availableFor, distance, useLocation, filters, onSearch]);
 
   // Live search on Enter key
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -153,15 +235,15 @@ export default function SearchFilter({ onSearch, currentSearch }: SearchFilterPr
                   id={`category-tab-${cat.id}`}
                   onClick={() => setActiveCategory(cat.id)}
                   className={`group relative flex flex-col items-center justify-center p-6 h-36 rounded-[2rem] transition-all duration-300 cursor-pointer ${isActive
-                      ? `${cat.color} text-white shadow-xl scale-105 z-10`
-                      : `bg-white ${cat.text} border-2 border-transparent hover:${cat.border} hover:${cat.light} shadow-sm`
+                    ? `${cat.color} text-white shadow-xl scale-105 z-10`
+                    : `bg-white ${cat.text} border-2 border-transparent hover:${cat.border} hover:${cat.light} shadow-sm`
                     }`}
                 >
                   <div className={`w-12 h-12 flex items-center justify-center rounded-2xl mb-3 transition-transform duration-500 ${isActive ? "bg-white/20 scale-110" : `${cat.light} ${cat.text} group-hover:scale-110`
                     }`}>
                     <Icon className="w-6 h-6" />
                   </div>
-                  <span className={`text-[12px] font-black tracking-tight uppercase transition-colors duration-300 ${isActive ? "text-white" : "text-gray-900 group-hover:text-gray-900"
+                  <span className={`text-[12px] font-black tracking-tight  transition-colors duration-300 ${isActive ? "text-white" : "text-gray-900 group-hover:text-gray-900"
                     }`}>
                     {cat.label}
                   </span>
@@ -174,92 +256,192 @@ export default function SearchFilter({ onSearch, currentSearch }: SearchFilterPr
           </div>
         </div>
 
-        {/* 2. Main Search Bar */}
-        <div className="flex items-center justify-center pb-2">
-          <div className="w-full flex flex-col lg:flex-row items-center bg-white/80 backdrop-blur-2xl border-2 border-white lg:rounded-full rounded-[2.5rem] shadow-[0_30px_100px_-20px_rgba(0,0,0,0.1)] focus-within:border-primary/40 transition-all p-3 lg:h-24 gap-3 lg:gap-0">
+        {/* 2. Main Search Bar (Transparent & Compact) */}
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-white/20 backdrop-blur-xl p-2 flex flex-wrap lg:flex-nowrap items-center gap-3">
 
-            {/* Keyword Input */}
-            <div className="flex-[1.5] w-full flex items-center px-8 lg:border-r border-gray-100 min-w-0 group/field">
-              <div className="w-12 h-12 bg-gray-50 group-focus-within/field:bg-primary/10 rounded-2xl flex items-center justify-center mr-4 transition-colors">
-                <Search className="w-6 h-6 text-gray-400 group-focus-within/field:text-primary transition-colors" />
+            {/* City Field */}
+            <div className="flex-1 min-w-[140px] p-1 relative" ref={cityDropdownRef}>
+              <span className="text-sm font-black text-indigo-600 uppercase tracking-widest">City</span>
+              <div
+                onClick={() => setIsCityOpen(!isCityOpen)}
+                className="bg-white/40 border border-black rounded-xl p-2 h-[44px] flex flex-col justify-center cursor-pointer hover:bg-white/60 transition-all"
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-sm font-bold text-gray-900 truncate text-center">{city}</span>
+                  <ChevronDown className={`w-3 h-3 text-gray-400 transition-transform ${isCityOpen ? "rotate-180" : ""}`} />
+                </div>
               </div>
-              <div className="flex flex-col flex-1">
-                <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-0.5">
-                  {activeCategory === "rooms" ? "Search by title, area, city..." :
-                    activeCategory === "vacancies" ? "Search by location, description..." :
-                      activeCategory === "mess" ? "Search by mess name, area..." :
-                        activeCategory === "food" ? "Search by stall name, location..." :
-                          "What are you looking for?"}
-                </span>
+
+              {isCityOpen && (
+                <div className="absolute top-[calc(100%+8px)] left-0 w-64 bg-white/90 backdrop-blur-2xl rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[1001] animate-in fade-in zoom-in-95 duration-200">
+                  <div className="p-2 border-b border-gray-50 bg-gray-50/30">
+                    <input
+                      autoFocus
+                      placeholder="Search city..."
+                      className="w-full px-3 py-1.5 bg-white/50 border border-gray-100 rounded-lg text-xs font-bold text-gray-900 outline-none"
+                      value={cityQuery}
+                      onChange={(e) => setCityQuery(e.target.value)}
+                    />
+                  </div>
+                  <div className="max-h-60 overflow-y-auto p-1 custom-scrollbar">
+                    {INDIAN_CITIES.filter(c => c.toLowerCase().includes(cityQuery.toLowerCase())).map(c => (
+                      <button
+                        key={c}
+                        onClick={() => {
+                          setCity(c);
+                          setIsCityOpen(false);
+                          setCityQuery("");
+                        }}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all ${city === c ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-50/50"}`}
+                      >
+                        {c}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Localities Field */}
+            <div className="flex-[1.5] min-w-[200px] p-1 flex flex-col group">
+              <span className="text-sm font-black text-indigo-600 uppercase tracking-widest group-focus-within:text-indigo-500 text-center">Locality</span>
+              <div className="bg-white/40 border border-black rounded-xl p-2 h-[44px] flex items-center relative hover:bg-white/60 transition-all">
                 <input
-                  id="search-keyword-input"
                   type="text"
-                  placeholder={
-                    activeCategory === "rooms" ? "e.g. 1BHK near college..." :
-                      activeCategory === "vacancies" ? "e.g. Double room for male..." :
-                        activeCategory === "mess" ? "e.g. Veg mess near campus..." :
-                          "Search rooms, mess, roommates..."
-                  }
-                  className="w-full bg-transparent outline-none text-base font-bold text-gray-900 placeholder:text-gray-300"
+                  placeholder="landmark or localities"
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
                   onKeyDown={handleKeyDown}
+                  className="w-full bg-transparent border-none outline-none text-sm font-bold text-gray-900 placeholder:text-gray-400 placeholder:font-normal text-center"
                 />
               </div>
             </div>
 
-            {/* Location Input */}
-            <div className="flex-1 w-full flex items-center px-8 lg:border-r border-gray-100 min-w-0 group/field">
-              <div className="w-12 h-12 bg-gray-50 group-focus-within/field:bg-secondary/10 rounded-2xl flex items-center justify-center mr-4 transition-colors">
-                <MapPin className="w-6 h-6 text-gray-400 group-focus-within/field:text-secondary transition-colors" />
-              </div>
-              <div className="flex flex-col flex-1">
-                <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-0.5">Location</span>
-                <input
-                  id="search-location-input"
-                  type="text"
-                  placeholder="Area, City..."
-                  className="w-full bg-transparent outline-none text-base font-bold text-gray-900 placeholder:text-gray-300"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                />
-              </div>
-            </div>
-
-            {/* Filter Toggle (if category has filters) */}
-            {hasFilters && (
-              <div className="hidden lg:flex items-center px-4">
-                <button
-                  id="toggle-filters-btn"
-                  type="button"
-                  onClick={() => setShowFilters(!showFilters)}
-                  className={`relative flex items-center gap-2 px-5 py-3 rounded-2xl text-[13px] font-black transition-all border-2 ${showFilters
-                      ? `${activeCat?.color || "bg-gray-900"} text-white border-transparent`
-                      : "bg-gray-50 text-gray-500 border-gray-100 hover:border-gray-200 hover:text-gray-900"
-                    }`}
-                >
-                  <SlidersHorizontal className="w-4 h-4" />
-                  Filters
-                  {activeFilterCount > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-gray-900 text-white text-[10px] font-black rounded-full flex items-center justify-center">
-                      {activeFilterCount}
-                    </span>
-                  )}
-                </button>
-              </div>
-            )}
-
-            {/* Search Button */}
-            <div className="px-3">
-              <button
-                id="search-submit-btn"
-                type="button"
-                onClick={handleSearch}
-                className="h-16 lg:h-18 px-10 bg-gray-900 hover:bg-black text-white rounded-[2rem] flex items-center justify-center transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 active:scale-95 font-bold text-lg gap-3 group"
+            {/* Freshness Field */}
+            <div className="flex-1 min-w-[120px] p-1 flex flex-col group relative" ref={freshnessDropdownRef}>
+              <span className="text-sm font-black text-indigo-600 uppercase tracking-widest text-center">Freshness</span>
+              <div 
+                onClick={() => setIsFreshnessOpen(!isFreshnessOpen)}
+                className="bg-white/40 border border-black rounded-xl p-2 h-[44px] flex items-center justify-center relative hover:bg-white/60 transition-all cursor-pointer"
               >
-                <Search className="w-5 h-5 group-hover:scale-125 transition-transform" />
-                <span>Find Now</span>
+                <span className="text-sm font-bold text-gray-900 truncate">
+                  {freshness === "24h" ? "Past 24 hr" : freshness === "1d" ? "1 day" : freshness === "4d" ? "4 days" : freshness === "1w" ? "1 week" : "All Time"}
+                </span>
+                <ChevronDown className={`ml-2 w-3 h-3 text-gray-400 transition-transform ${isFreshnessOpen ? "rotate-180" : ""}`} />
+              </div>
+              
+              {isFreshnessOpen && (
+                <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-white/90 backdrop-blur-2xl rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[1001] animate-in fade-in zoom-in-95 duration-200">
+                  <div className="p-1">
+                    {[
+                      { label: "Past 24 hr", value: "24h" },
+                      { label: "1 day", value: "1d" },
+                      { label: "4 days", value: "4d" },
+                      { label: "1 week", value: "1w" },
+                      { label: "All Time", value: "" }
+                    ].map(opt => (
+                      <button
+                        key={opt.value}
+                        onClick={() => {
+                          setFreshness(opt.value);
+                          setIsFreshnessOpen(false);
+                        }}
+                        className={`w-full text-center px-3 py-2 rounded-lg text-xs font-bold transition-all ${freshness === opt.value ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-50/50"}`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Price Sort Field */}
+            <div className="flex-1 min-w-[120px] p-1 flex flex-col group relative" ref={rentSortDropdownRef}>
+              <span className="text-sm font-black text-indigo-600 uppercase tracking-widest text-center">Rent Sort</span>
+              <div 
+                onClick={() => setIsRentSortOpen(!isRentSortOpen)}
+                className="bg-white/40 border border-black rounded-xl p-2 h-[44px] flex items-center justify-center relative hover:bg-white/60 transition-all cursor-pointer"
+              >
+                <span className="text-sm font-bold text-gray-900 truncate">
+                  {rentSort === "low-high" ? "Low to High" : rentSort === "high-low" ? "High to Low" : "Any Price"}
+                </span>
+                <ChevronDown className={`ml-2 w-3 h-3 text-gray-400 transition-transform ${isRentSortOpen ? "rotate-180" : ""}`} />
+              </div>
+
+              {isRentSortOpen && (
+                <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-white/90 backdrop-blur-2xl rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[1001] animate-in fade-in zoom-in-95 duration-200">
+                  <div className="p-1">
+                    {[
+                      { label: "Any Price", value: "" },
+                      { label: "Low to High", value: "low-high" },
+                      { label: "High to Low", value: "high-low" }
+                    ].map(opt => (
+                      <button
+                        key={opt.value}
+                        onClick={() => {
+                          setRentSort(opt.value);
+                          setIsRentSortOpen(false);
+                        }}
+                        className={`w-full text-center px-3 py-2 rounded-lg text-xs font-bold transition-all ${rentSort === opt.value ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-50/50"}`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Available For Field */}
+            <div className="flex-1 min-w-[120px] p-1 flex flex-col group relative" ref={availableForDropdownRef}>
+              <span className="text-sm font-black text-indigo-600 uppercase tracking-widest text-center">Available For</span>
+              <div 
+                onClick={() => setIsAvailableForOpen(!isAvailableForOpen)}
+                className="bg-white/40 border border-black rounded-xl p-2 h-[44px] flex items-center justify-center relative hover:bg-white/60 transition-all cursor-pointer"
+              >
+                <span className="text-sm font-bold text-gray-900 truncate">
+                  {availableFor || "Any"}
+                </span>
+                <ChevronDown className={`ml-2 w-3 h-3 text-gray-400 transition-transform ${isAvailableForOpen ? "rotate-180" : ""}`} />
+              </div>
+
+              {isAvailableForOpen && (
+                <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-white/90 backdrop-blur-2xl rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[1001] animate-in fade-in zoom-in-95 duration-200">
+                  <div className="p-1">
+                    {[
+                      { label: "Any", value: "" },
+                      { label: "Boys", value: "Boys" },
+                      { label: "Girls", value: "Girls" },
+                      { label: "Family", value: "Family" }
+                    ].map(opt => (
+                      <button
+                        key={opt.value}
+                        onClick={() => {
+                          setAvailableFor(opt.value);
+                          setIsAvailableForOpen(false);
+                        }}
+                        className={`w-full text-center px-3 py-2 rounded-lg text-xs font-bold transition-all ${availableFor === opt.value ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-50/50"}`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Search Button Container */}
+            <div className="p-1 flex flex-col">
+              {/* Phantom label for alignment */}
+              <span className="text-sm font-black opacity-0 uppercase tracking-widest">Search</span>
+              <button
+                onClick={handleSearch}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 h-[44px] rounded-xl font-black text-sm tracking-widest transition-all shadow-xl shadow-indigo-200 hover:shadow-indigo-300 hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
+              >
+                <Search className="w-4 h-4" />
+                FIND
               </button>
             </div>
           </div>
@@ -273,7 +455,7 @@ export default function SearchFilter({ onSearch, currentSearch }: SearchFilterPr
                 <div className={`w-8 h-8 ${activeCat?.color || "bg-gray-900"} rounded-xl flex items-center justify-center`}>
                   <SlidersHorizontal className="w-4 h-4 text-white" />
                 </div>
-                <span className="text-sm font-black text-gray-900 uppercase tracking-widest">
+                <span className="text-sm font-black text-gray-900  tracking-widest">
                   {activeCat?.label} Filters
                 </span>
                 {activeFilterCount > 0 && (
@@ -300,7 +482,7 @@ export default function SearchFilter({ onSearch, currentSearch }: SearchFilterPr
                 if (filterDef.type === "select" && filterDef.options) {
                   return (
                     <div key={filterDef.key} className="flex flex-col gap-1.5">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                      <label className="text-[10px] font-black  tracking-widest text-gray-400">
                         {filterDef.label}
                       </label>
                       <div className="relative">
@@ -311,8 +493,8 @@ export default function SearchFilter({ onSearch, currentSearch }: SearchFilterPr
                             e.target.value ? setFilter(filterDef.key, e.target.value) : clearFilter(filterDef.key)
                           }
                           className={`w-full px-3 py-2.5 rounded-xl text-[13px] font-bold border-2 outline-none appearance-none cursor-pointer transition-all ${value
-                              ? `${activeCat?.light || "bg-gray-50"} ${activeCat?.text || "text-gray-900"} border-current`
-                              : "bg-gray-50 text-gray-500 border-gray-100 hover:border-gray-200"
+                            ? `${activeCat?.light || "bg-gray-50"} ${activeCat?.text || "text-gray-900"} border-current`
+                            : "bg-gray-50 text-gray-500 border-gray-100 hover:border-gray-200"
                             }`}
                         >
                           <option value="">Any</option>
@@ -330,7 +512,7 @@ export default function SearchFilter({ onSearch, currentSearch }: SearchFilterPr
                   const numVal = (value as number) || filterDef.max!;
                   return (
                     <div key={filterDef.key} className="flex flex-col gap-1.5 col-span-2">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 flex items-center justify-between">
+                      <label className="text-[10px] font-black  tracking-widest text-gray-400 flex items-center justify-between">
                         <span>{filterDef.label}</span>
                         <span className={`${activeCat?.text || "text-gray-900"} font-black`}>
                           {numVal === filterDef.max ? "Any" : `≤ ₹${numVal.toLocaleString()}`}
@@ -362,16 +544,16 @@ export default function SearchFilter({ onSearch, currentSearch }: SearchFilterPr
                   const isOn = value === true;
                   return (
                     <div key={filterDef.key} className="flex flex-col gap-1.5">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                      <label className="text-[10px] font-black  tracking-widest text-gray-400">
                         {filterDef.label}
                       </label>
                       <button
                         id={`filter-${filterDef.key}`}
                         type="button"
                         onClick={() => isOn ? clearFilter(filterDef.key) : setFilter(filterDef.key, true)}
-                        className={`px-4 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider border-2 transition-all ${isOn
-                            ? `${activeCat?.color || "bg-gray-900"} text-white border-transparent shadow-md`
-                            : "bg-gray-50 text-gray-400 border-gray-100 hover:border-gray-200"
+                        className={`px-4 py-2.5 rounded-xl text-[11px] font-black  tracking-wider border-2 transition-all ${isOn
+                          ? `${activeCat?.color || "bg-gray-900"} text-white border-transparent shadow-md`
+                          : "bg-gray-50 text-gray-400 border-gray-100 hover:border-gray-200"
                           }`}
                       >
                         {isOn ? "✓ " : ""}{filterDef.label}
@@ -390,7 +572,7 @@ export default function SearchFilter({ onSearch, currentSearch }: SearchFilterPr
                 id="apply-filters-btn"
                 type="button"
                 onClick={handleSearch}
-                className={`px-8 py-3 ${activeCat?.color || "bg-gray-900"} text-white rounded-2xl text-sm font-black uppercase tracking-wider shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center gap-2`}
+                className={`px-8 py-3 ${activeCat?.color || "bg-gray-900"} text-white rounded-2xl text-sm font-black  tracking-wider shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center gap-2`}
               >
                 <Search className="w-4 h-4" />
                 Apply Filters & Search
@@ -425,13 +607,7 @@ export default function SearchFilter({ onSearch, currentSearch }: SearchFilterPr
             })}
           </div>
         )}
-
       </div>
-
-      <style jsx global>{`
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      `}</style>
     </div>
   );
 }

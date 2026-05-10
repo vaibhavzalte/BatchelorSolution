@@ -18,7 +18,7 @@ public abstract class CommonListingFields {
     protected String type;
     protected String subType;
     protected String primaryId;
-    protected String secondaryId;
+    protected String city;
     protected Double latitude;
     protected Double longitude;
     protected List<String> images;

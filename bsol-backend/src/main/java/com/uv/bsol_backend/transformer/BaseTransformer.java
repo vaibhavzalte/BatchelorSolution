@@ -33,8 +33,8 @@ public abstract class BaseTransformer<E extends CommonListingFields, D> implemen
     }
 
     @Override
-    public String getSecondaryId() {
-        return listing.getSecondaryId();
+    public String getCity() {
+        return listing.getCity();
     }
 
     @Override

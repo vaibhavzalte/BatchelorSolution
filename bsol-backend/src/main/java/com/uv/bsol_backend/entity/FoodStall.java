@@ -16,7 +16,6 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 public class FoodStall extends CommonListingFields {
 
-    private Long id;
 
     private String stallName;
 

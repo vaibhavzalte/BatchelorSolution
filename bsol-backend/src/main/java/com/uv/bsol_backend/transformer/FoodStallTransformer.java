@@ -11,11 +11,6 @@ public class FoodStallTransformer extends BaseTransformer<FoodStall, FoodStall> 
 
 
     @Override
-    public String getSecondaryId() {
-        return null;
-    }
-
-    @Override
     public String getType() {
         return LISTING_TYPE;
     }

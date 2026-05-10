@@ -1,9 +1,9 @@
 package com.uv.bsol_backend.transformer;
 
-import com.uv.bsol_backend.dto.RoomDTO;
+import com.uv.bsol_backend.dto.RoomPayload;
 import com.uv.bsol_backend.entity.Room;
 
-public class RoomTransformer extends BaseTransformer<Room, RoomDTO> {
+public class RoomTransformer extends BaseTransformer<Room, RoomPayload> {
     public static final String LISTING_TYPE = "Room";
 
     public RoomTransformer(Room room) {
@@ -18,8 +18,8 @@ public class RoomTransformer extends BaseTransformer<Room, RoomDTO> {
 
 
     @Override
-    public RoomDTO toDTO() {
-        return RoomDTO.builder()
+    public RoomPayload toDTO() {
+        return RoomPayload.builder()
                 .title(listing.getTitle())
                 .description(listing.getDescription())
                 .roomType(listing.getRoomType())
@@ -32,7 +32,6 @@ public class RoomTransformer extends BaseTransformer<Room, RoomDTO> {
                 .brokerage(listing.getBrokerage())
                 .amenities(listing.getAmenities())
                 .address(listing.getAddress())
-                .city(listing.getCity())
                 .area(listing.getArea())
                 .images(listing.getImages())
                 .ownerContact(listing.getOwnerContact())
@@ -48,8 +47,8 @@ public class RoomTransformer extends BaseTransformer<Room, RoomDTO> {
     }
 
     @Override
-    public Class<RoomDTO> getDtoClass() {
-        return RoomDTO.class;
+    public Class<RoomPayload> getDtoClass() {
+        return RoomPayload.class;
     }
 
 

@@ -65,7 +65,7 @@ public class ListingService {
                 .type(transformer.getType())
                 .subType(transformer.getSubType())
                 .primaryId(transformer.getPrimaryId())
-                .secondaryId(transformer.getSecondaryId())
+                .city(transformer.getCity())
                 .latitude(transformer.getLatitude())
                 .longitude(transformer.getLongitude())
                 .payload(getJsonString(transformer.toDTO()))
@@ -86,7 +86,7 @@ public class ListingService {
             dto = objectMapper.readValue(entity.getPayload(), dtoClass);
             dto.setId(entity.getId());
             dto.setPrimaryId(entity.getPrimaryId());
-            dto.setSecondaryId(entity.getSecondaryId());
+            dto.setCity(entity.getCity());
             dto.setType(entity.getType());
             dto.setSubType(entity.getSubType());
             dto.setStatus(entity.getStatus());
@@ -124,7 +124,7 @@ public class ListingService {
         ListingsEntity updated = entity.toBuilder()
                 .subType(transformer.getSubType())
                 .primaryId(transformer.getPrimaryId())
-                .secondaryId(transformer.getSecondaryId())
+                .city(transformer.getCity())
                 .latitude(transformer.getLatitude())
                 .longitude(transformer.getLongitude())
                 .payload(getJsonString(transformer.toDTO()))
@@ -168,7 +168,7 @@ public class ListingService {
         Map<String, Object> filterValues = new HashMap<>();
         if (allParams != null && !allParams.isEmpty()) {
             addFixedQueryCondition("subType", allParams, query, filterValues);
-            addFixedQueryCondition("secondaryId", allParams, query, filterValues);
+            addFixedQueryCondition("city", allParams, query, filterValues);
             addFixedQueryCondition("status", allParams, query, filterValues);
             addFixedQueryCondition("primaryId", allParams, query, filterValues);
             addFlexQueryConditions(allParams, query, filterValues);

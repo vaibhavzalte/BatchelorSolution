@@ -9,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class MessDTO {
+public class MessPayload {
 
     protected List<String> images;
 
@@ -34,9 +34,6 @@ public class MessDTO {
 
     // 🔹 Location
     private String address;
-
-    private String city;
-
     private String area;
 
     // 🔹 Owner Info

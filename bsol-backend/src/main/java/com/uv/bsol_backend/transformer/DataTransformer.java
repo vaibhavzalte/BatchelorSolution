@@ -11,7 +11,7 @@ public interface DataTransformer<E extends CommonListingFields, D> {
 
     String getPrimaryId();
 
-    String getSecondaryId();
+    String getCity();
 
     String getType();
 

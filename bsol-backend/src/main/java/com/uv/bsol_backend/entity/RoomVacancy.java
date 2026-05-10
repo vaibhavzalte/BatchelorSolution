@@ -34,8 +34,6 @@ public class RoomVacancy extends CommonListingFields {
     // 🔹 Location
     private String address;
 
-    private String city;
-
     private String area;
 
 

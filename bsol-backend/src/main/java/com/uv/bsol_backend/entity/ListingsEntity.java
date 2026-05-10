@@ -31,8 +31,8 @@ public class ListingsEntity {
     @Column(name = "primary_id")
     private String primaryId;
 
-    @Column(name = "secondary_id")
-    private String secondaryId;
+    @Column(name = "city")
+    private String city;
 
     @Column(name = "payload", columnDefinition = "TEXT")
     private String payload;

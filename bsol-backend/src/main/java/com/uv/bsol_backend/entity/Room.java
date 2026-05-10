@@ -42,8 +42,6 @@ public class Room extends CommonListingFields {
     // 🔹 Location
     private String address;
 
-    private String city;
-
     private String area;
 
 

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 export const CATEGORIES = [
   { id: "all", label: "Posts", hex: "#fff7ed", light: "bg-orange-50", color: "bg-orange-500" },
@@ -21,7 +22,34 @@ interface CategoryContextType {
 const CategoryContext = createContext<CategoryContextType | undefined>(undefined);
 
 export function CategoryProvider({ children }: { children: React.ReactNode }) {
-  const [activeCategory, setActiveCategory] = useState("all");
+  const pathname = usePathname();
+  const router = useRouter();
+  
+  // Sync initial state from URL
+  const getInitialCategory = () => {
+    const path = pathname.split("/").filter(Boolean).pop(); // Get last segment if it's a category
+    const validCat = CATEGORIES.find(c => c.id === path);
+    return validCat ? validCat.id : "all";
+  };
+
+  const [activeCategory, setActiveCategoryState] = useState(getInitialCategory);
+
+  const setActiveCategory = (id: string) => {
+    setActiveCategoryState(id);
+    if (id === "all") {
+      router.push("/");
+    } else {
+      router.push(`/${id}`);
+    }
+  };
+
+  // Sync state when URL changes (back/forward button)
+  useEffect(() => {
+    const currentPath = pathname === "/" ? "all" : pathname.split("/").filter(Boolean).pop() || "all";
+    if (CATEGORIES.find(c => c.id === currentPath)) {
+        setActiveCategoryState(currentPath);
+    }
+  }, [pathname]);
 
   const activeCatData = CATEGORIES.find(cat => cat.id === activeCategory);
 

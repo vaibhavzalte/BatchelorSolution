@@ -200,16 +200,7 @@ export default function LocationPicker({ onLocationSelect, initialLocation }: Lo
         </div>
       </div>
 
-      <div className="flex gap-4">
-        <div className="flex-1 p-3 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-           <p className="text-[10px] font-black uppercase text-gray-400 mb-1">Selected Latitude</p>
-           <p className="text-sm font-mono text-gray-700">{position[0].toFixed(6)}</p>
-        </div>
-        <div className="flex-1 p-3 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-           <p className="text-[10px] font-black uppercase text-gray-400 mb-1">Selected Longitude</p>
-           <p className="text-sm font-mono text-gray-700">{position[1].toFixed(6)}</p>
-        </div>
-      </div>
+      {/* Latitude and Longitude hidden as per request */}
     </div>
   );
 }

@@ -1,9 +1,11 @@
-const BASE_URL = "http://localhost:8080/uv-api/v1";
-const MGMT_NAME = "bsol";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/uv-api/v1";
+const MGMT_NAME = "listingManagment";
+
+const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type ListingType = "room" | "Mess" | "food-stall" | "room-vacancy";
+export type ListingType = "Room" | "Mess" | "food-stall" | "room-vacancy";
 
 export interface RoomVacancy {
   id?: number;
@@ -26,6 +28,10 @@ export interface RoomVacancy {
   preferredTenant?: string; // Male / Female / Any
   foodIncluded?: string;    // Yes / No / Optional
   updatedBy?: string;
+  ownerName?: string;
+  ownerContact?: string;
+  ownerEmail?: string;
+  images?: string[];
 }
 
 export interface Room {
@@ -121,5 +127,72 @@ export async function createListing(
     const errText = await res.text();
     throw new Error(`Failed to create listing: ${errText}`);
   }
+  return res.json();
+}
+
+// ─── Room listing with multipart/form-data ────────────────────────────────────
+
+export interface RoomPayload {
+  title: string;
+  description: string;
+  roomType: string;
+  availableFor: string;
+  totalRooms: number;
+  availableRooms: number;
+  rent: number;
+  deposit: number;
+  maintenance: number;
+  brokerage: number;
+  amenities: string[];
+  address: string;
+  area: string;
+  city: string;
+  location: string;
+  latitude: number | null;
+  longitude: number | null;
+  ownerName: string;
+  ownerContact: string;
+  ownerEmail: string;
+}
+
+export async function createRoomListing(
+  type: string,
+  payload: RoomPayload,
+  imageFiles: File[]
+): Promise<Room> {
+  // Client-side image size guard (belt-and-suspenders after in-component check)
+  const oversized = imageFiles.filter((f) => f.size > MAX_IMAGE_SIZE_BYTES);
+  if (oversized.length > 0) {
+    throw new Error(
+      `These images exceed the 5 MB limit: ${oversized.map((f) => f.name).join(", ")}`
+    );
+  }
+
+  const formData = new FormData();
+
+  // Backend expects the JSON body as a part named "listing"
+  formData.append(
+    "listing",
+    new Blob([JSON.stringify(payload)], { type: "application/json" })
+  );
+
+  // Attach image files under the "images" key
+  imageFiles.forEach((file) => {
+    formData.append("images", file);
+  });
+
+  const res = await fetch(`${BASE_URL}/${MGMT_NAME}/${type}`, {
+    method: "POST",
+    // Do NOT set Content-Type manually — browser sets it with the correct boundary
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    // Log full server error to console; caller shows only a clean toast
+    console.error("[createRoomListing] Server error:", errText);
+    throw new Error("Could not publish the room listing. Please try again.");
+  }
+
   return res.json();
 }

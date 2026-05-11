@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.ObjectMapper;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,15 +33,6 @@ public class ListingService {
 
     @Autowired
     private FileStorageService fileStorageService;
-
-    private static void addFixedQueryCondition(String paramName, Map<String, String> allParams, StringBuilder query, Map<String, Object> filterValues) {
-        String paramValue = allParams.get(paramName);
-        if (paramValue != null && !paramValue.isEmpty()) {
-            query.append(" AND  t1.").append(paramName).append(" = :").append(paramName);
-            filterValues.put(paramName, paramValue);
-            allParams.remove(paramName);
-        }
-    }
 
     public <E extends CommonListingFields, D> E createListingWithImages(DataTransformer<E, D> transformer, List<MultipartFile> images) {
         if (images != null && !images.isEmpty()) {
@@ -171,9 +163,19 @@ public class ListingService {
             addFixedQueryCondition("city", allParams, query, filterValues);
             addFixedQueryCondition("status", allParams, query, filterValues);
             addFixedQueryCondition("primaryId", allParams, query, filterValues);
+            addFreshnessCondition(allParams, query, filterValues);
             addFlexQueryConditions(allParams, query, filterValues);
         }
         return filterValues;
+    }
+
+    private static void addFixedQueryCondition(String paramName, Map<String, String> allParams, StringBuilder query, Map<String, Object> filterValues) {
+        String paramValue = allParams.get(paramName);
+        if (paramValue != null && !paramValue.isEmpty()) {
+            query.append(" AND  t1.").append(paramName).append(" = :").append(paramName);
+            filterValues.put(paramName, paramValue);
+            allParams.remove(paramName);
+        }
     }
 
     private void addFlexQueryConditions(Map<String, String> allParams, StringBuilder query, Map<String, Object> filterValues) {
@@ -186,4 +188,44 @@ public class ListingService {
         filterValues.put(key, value);
     }
 
+    private void addFreshnessCondition(
+            Map<String, String> allParams,
+            StringBuilder query,
+            Map<String, Object> filterValues
+    ) {
+
+        String freshness = allParams.get("freshness");
+
+        // remove so flex query does not process it
+        allParams.remove("freshness");
+
+        if (freshness == null || freshness.isBlank()) {
+            return;
+        }
+
+        OffsetDateTime filterTime = null;
+
+        switch (freshness) {
+
+            case "24h":
+                filterTime = OffsetDateTime.now().minusHours(24);
+                break;
+
+            case "4d":
+                filterTime = OffsetDateTime.now().minusDays(4);
+                break;
+
+            case "1w":
+                filterTime = OffsetDateTime.now().minusWeeks(1);
+                break;
+
+            default:
+                break;
+        }
+
+        if (filterTime != null) {
+            query.append(" AND t1.createTime >= :filterTime ");
+            filterValues.put("filterTime", filterTime);
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.uv.bsol_backend.transformer;
 
 import com.uv.bsol_backend.entity.*;
+import com.uv.bsol_backend.exception.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
@@ -23,7 +24,7 @@ public class DataTransformerFactory {
                     transformer = new FoodStallTransformer(payload == null ? null : objectMapper.readValue(payload, FoodStall.class));
             case STUDY_ROOM ->
                     transformer = new StudyRoomTransformer(payload == null ? null : objectMapper.readValue(payload, StudyRoom.class));
-            default -> throw new IllegalArgumentException("Invalid Listing Type " + type);
+            default -> throw new BadRequestException("Invalid Listing Type " + type);
         }
         return transformer;
     }

@@ -104,7 +104,7 @@ public class ListingService {
         ListingsEntity entity = listingsRepository.findByIdAndTypeAndStatus(id, type, "Active");
         if (entity == null) {
             log.info("Listing not found with id: {}", id);
-            throw new RuntimeException("Listing not found with id: " + id);
+            throw new ListingNotFoundException(type + " not found with id: "+ id);
         }
         if (images != null && !images.isEmpty()) {
             try {
@@ -112,7 +112,7 @@ public class ListingService {
                 transformer.setImages(imageUrls);
             } catch (java.io.IOException e) {
                 log.error("Failed to store images during update", e);
-                throw new RuntimeException("Failed to store images", e);
+                throw new FileStorageException("Failed to store images", e);
             }
         }
         ListingsEntity updated = entity.toBuilder()
@@ -132,7 +132,7 @@ public class ListingService {
         ListingsEntity entity = listingsRepository.findByIdAndTypeAndStatus(id, transformer.getType(), "Active");
         if (entity == null) {
             log.info("Listing not found with id: {}", id);
-            throw new RuntimeException("Listing not found with id: " + id);
+            throw new ListingNotFoundException(transformer.getType() + " not found with id: "+ id);
         }
         entity.setStatus("InActive");
         listingsRepository.save(entity);

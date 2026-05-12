@@ -1,5 +1,6 @@
 package com.uv.bsol_backend.service;
 
+import com.uv.bsol_backend.exception.FileStorageException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,7 +22,7 @@ public class LocalFileStorageService implements FileStorageService {
         try {
             Files.createDirectories(rootLocation);
         } catch (IOException e) {
-            throw new RuntimeException("Could not initialize storage at path: " + rootLocation.toAbsolutePath(), e);
+            throw new FileStorageException("Could not initialize storage at path: " + rootLocation.toAbsolutePath(), e);
         }
 
     }

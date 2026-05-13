@@ -11,16 +11,16 @@ import { useCategory } from "@/contexts/CategoryContext";
 
 // Mapping from category context IDs ➜ backend ListingType
 const CATEGORY_TO_TYPE: Record<string, ListingType | null> = {
-  all:           null,
-  room:          "Room",
-  mess:          "Mess",
-  food:          "food-stall",
-  vacancies:     "room-vacancy",
-  roommate:      null,
+  all: null,
+  rooms: "Room",
+  mess: "Mess",
+  food: "FoodStall",
+  vacancies: "RoomVacancy",
+  roommate: null,
   "study-rooms": null,
 };
 
-const ALL_TYPES: ListingType[] = ["Room", "Mess", "food-stall", "room-vacancy"];
+const ALL_TYPES: ListingType[] = ["Room", "Mess", "FoodStall", "RoomVacancy"];
 
 interface TypedListing {
   type: ListingType;
@@ -95,11 +95,11 @@ function matchesSearch(item: TypedListing, search: SearchState): boolean {
 
 export default function Home() {
   const { activeCategory } = useCategory();
-  const [listings, setListings]     = useState<TypedListing[]>([]);
-  const [loading, setLoading]       = useState(true);
-  const [error, setError]           = useState<string | null>(null);
+  const [listings, setListings] = useState<TypedListing[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [search, setSearch]         = useState<SearchState>(DEFAULT_SEARCH);
+  const [search, setSearch] = useState<SearchState>(DEFAULT_SEARCH);
 
   const fetchListings = useCallback(async () => {
     setLoading(true);
@@ -108,12 +108,27 @@ export default function Home() {
     try {
       const mappedType = CATEGORY_TO_TYPE[activeCategory];
 
+      // Build parameters for the API call
+      const params: Record<string, any> = {
+        ...search.filters,
+        city: search.location,
+        keyword: search.keyword,
+      };
+
+      // Default freshness for Rooms if not explicitly selected in the search filters
+      // We check if it's missing entirely (e.g. on initial load)
+      if (mappedType === "Room" && params.freshness === undefined) {
+        params.freshness = "1w";
+      }
+
+      console.log(`[fetchListings] Fetching ${activeCategory} (${mappedType}) with params:`, params);
+
       if (mappedType !== null && mappedType !== undefined) {
-        const items = await getListings(mappedType);
+        const items = await getListings(mappedType, params);
         setListings(items.map((d) => ({ type: mappedType, data: d })));
       } else if (activeCategory === "all") {
         const results = await Promise.allSettled(
-          ALL_TYPES.map((t) => getListings(t))
+          ALL_TYPES.map((t) => getListings(t, params))
         );
         const merged: TypedListing[] = [];
         ALL_TYPES.forEach((t, i) => {
@@ -131,23 +146,20 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [activeCategory]);
+  }, [activeCategory, search]);
 
-  // Refetch when category changes; also reset search
+  // Reset search when category changes
   useEffect(() => {
     setSearch(DEFAULT_SEARCH);
+  }, [activeCategory]);
+
+  // Refetch when category OR search state changes
+  useEffect(() => {
     fetchListings();
   }, [fetchListings]);
 
-  // Filtered listings (client-side)
-  const filteredListings = useMemo(() => {
-    const hasSearch =
-      search.keyword !== "" ||
-      search.location !== "" ||
-      Object.keys(search.filters).length > 0;
-    if (!hasSearch) return listings;
-    return listings.filter((item) => matchesSearch(item, search));
-  }, [listings, search]);
+  // No longer need client-side filtering as backend handles it
+  const filteredListings = listings;
 
   const hasSearch =
     search.keyword !== "" ||
@@ -187,10 +199,10 @@ export default function Home() {
                 {loading
                   ? "Loading listings…"
                   : hasSearch
-                  ? `${filteredListings.length} result${filteredListings.length !== 1 ? "s" : ""} found`
-                  : filteredListings.length > 0
-                  ? `${filteredListings.length} listing${filteredListings.length !== 1 ? "s" : ""}`
-                  : "No listings yet"}
+                    ? `${filteredListings.length} result${filteredListings.length !== 1 ? "s" : ""} found`
+                    : filteredListings.length > 0
+                      ? `${filteredListings.length} listing${filteredListings.length !== 1 ? "s" : ""}`
+                      : "No listings yet"}
               </h1>
               <p className="text-sm text-gray-400 font-medium mt-0.5">
                 {isAllCategory ? "All categories" : `Showing: ${activeCategory}`}
@@ -296,7 +308,7 @@ export default function Home() {
 
           {/* ── Listings Grid ──────────────────────────────────────────── */}
           {!loading && !error && filteredListings.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-16">
               {filteredListings.map((item, idx) => (
                 <ListingCard key={idx} type={item.type} data={item.data} />
               ))}

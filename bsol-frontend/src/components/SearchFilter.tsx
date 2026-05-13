@@ -135,7 +135,7 @@ export default function SearchFilter({ onSearch, currentSearch }: SearchFilterPr
   const [isAvailableForOpen, setIsAvailableForOpen] = useState(false);
 
   const [keyword, setKeyword] = useState(currentSearch.keyword);
-  const [freshness, setFreshness] = useState("24h");
+  const [freshness, setFreshness] = useState("1w");
   const [rentSort, setRentSort] = useState("");
   const [availableFor, setAvailableFor] = useState("");
 
@@ -169,7 +169,7 @@ export default function SearchFilter({ onSearch, currentSearch }: SearchFilterPr
   useEffect(() => {
     setFilters({});
     setKeyword("");
-    setFreshness("24h");
+    setFreshness("1w");
     setRentSort("");
     setAvailableFor("");
     setDistance("10km");

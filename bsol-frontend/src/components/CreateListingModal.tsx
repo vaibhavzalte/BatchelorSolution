@@ -32,10 +32,10 @@ const LocationPicker = dynamic(() => import("./LocationPicker"), {
 // ─── Type Tabs ─────────────────────────────────────────────────────────────
 
 const TYPES: { id: ListingType; label: string; icon: React.ReactNode; color: string }[] = [
-  { id: "room-vacancy", label: "Room Vacancy", icon: <Users className="w-5 h-5" />,   color: "bg-emerald-500" },
-  { id: "room",         label: "Full Room/Flat", icon: <House className="w-5 h-5" />,  color: "bg-indigo-500" },
-  { id: "Mess",         label: "Mess",          icon: <CookingPot className="w-5 h-5" />, color: "bg-amber-500" },
-  { id: "food-stall",   label: "Food Stall",    icon: <Utensils className="w-5 h-5" />,   color: "bg-pink-500" },
+  { id: "RoomVacancy", label: "Room Vacancy", icon: <Users className="w-5 h-5" />, color: "bg-emerald-500" },
+  { id: "room", label: "Full Room/Flat", icon: <House className="w-5 h-5" />, color: "bg-indigo-500" },
+  { id: "Mess", label: "Mess", icon: <CookingPot className="w-5 h-5" />, color: "bg-amber-500" },
+  { id: "FoodStall", label: "Food Stall", icon: <Utensils className="w-5 h-5" />, color: "bg-pink-500" },
 ];
 
 const AMENITIES_LIST = [
@@ -145,26 +145,26 @@ function RoomForm({
         </Field>
 
         <div className="flex gap-4 items-center">
-            <button type="button" onClick={() => set("attachedBathroom", !data.attachedBathroom)} 
-                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider border-2 transition-all ${data.attachedBathroom ? "bg-emerald-500 text-white border-emerald-500" : "bg-white text-gray-400 border-gray-100"}`}>
-                Attached Bathroom
-            </button>
-            <button type="button" onClick={() => set("furnished", !data.furnished)} 
-                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider border-2 transition-all ${data.furnished ? "bg-emerald-500 text-white border-emerald-500" : "bg-white text-gray-400 border-gray-100"}`}>
-                Furnished
-            </button>
+          <button type="button" onClick={() => set("attachedBathroom", !data.attachedBathroom)}
+            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider border-2 transition-all ${data.attachedBathroom ? "bg-emerald-500 text-white border-emerald-500" : "bg-white text-gray-400 border-gray-100"}`}>
+            Attached Bathroom
+          </button>
+          <button type="button" onClick={() => set("furnished", !data.furnished)}
+            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider border-2 transition-all ${data.furnished ? "bg-emerald-500 text-white border-emerald-500" : "bg-white text-gray-400 border-gray-100"}`}>
+            Furnished
+          </button>
         </div>
 
         {/* Location Section */}
         <div className="sm:col-span-2 mt-4">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
-               <MapPin className="w-4 h-4 text-emerald-500" />
+              <MapPin className="w-4 h-4 text-emerald-500" />
             </div>
             <h3 className="text-sm font-black text-gray-800 uppercase tracking-tight">Exact Location</h3>
           </div>
-          
-          <LocationPicker 
+
+          <LocationPicker
             onLocationSelect={(loc) => {
               set("location", loc.address);
               set("latitude", loc.lat);
@@ -176,19 +176,19 @@ function RoomForm({
 
         {/* Amenities Selection */}
         <div className="sm:col-span-2 mt-4">
-            <label className="text-[11px] font-black uppercase tracking-widest text-gray-400 mb-3 block">Amenities</label>
-            <div className="flex flex-wrap gap-2">
-                {AMENITIES_LIST.map(amenity => (
-                    <button
-                        key={amenity}
-                        type="button"
-                        onClick={() => toggleAmenity(amenity)}
-                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider border-2 transition-all ${((data.amenities as string[]) || []).includes(amenity) ? "bg-emerald-500 text-white border-emerald-500 shadow-md" : "bg-white text-gray-400 border-gray-100 hover:border-emerald-200"}`}
-                    >
-                        {amenity}
-                    </button>
-                ))}
-            </div>
+          <label className="text-[11px] font-black uppercase tracking-widest text-gray-400 mb-3 block">Amenities</label>
+          <div className="flex flex-wrap gap-2">
+            {AMENITIES_LIST.map(amenity => (
+              <button
+                key={amenity}
+                type="button"
+                onClick={() => toggleAmenity(amenity)}
+                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider border-2 transition-all ${((data.amenities as string[]) || []).includes(amenity) ? "bg-emerald-500 text-white border-emerald-500 shadow-md" : "bg-white text-gray-400 border-gray-100 hover:border-emerald-200"}`}
+              >
+                {amenity}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -227,7 +227,7 @@ function MessForm({ data, onChange }: { data: Record<string, unknown>; onChange:
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
       <div className="sm:col-span-2">
         <Field label="Mess Name *">
-            <input className={inputCls} placeholder='e.g. "Shree Ganesh Mess"' value={(data.title as string) || ""} onChange={e => set("title", e.target.value)} />
+          <input className={inputCls} placeholder='e.g. "Shree Ganesh Mess"' value={(data.title as string) || ""} onChange={e => set("title", e.target.value)} />
         </Field>
       </div>
       <Field label="Food Type">
@@ -240,7 +240,7 @@ function MessForm({ data, onChange }: { data: Record<string, unknown>; onChange:
         <input type="number" className={inputCls} value={(data.monthlyFee as string) || ""} onChange={e => set("monthlyFee", Number(e.target.value))} />
       </Field>
       <div className="sm:col-span-2">
-         <LocationPicker onLocationSelect={(loc) => { set("location", loc.address); set("latitude", loc.lat); set("longitude", loc.lng); }} />
+        <LocationPicker onLocationSelect={(loc) => { set("location", loc.address); set("latitude", loc.lat); set("longitude", loc.lng); }} />
       </div>
     </div>
   );
@@ -256,7 +256,7 @@ function FoodStallForm({ data, onChange }: { data: Record<string, unknown>; onCh
         </Field>
       </div>
       <div className="sm:col-span-2">
-         <LocationPicker onLocationSelect={(loc) => { set("location", loc.address); set("latitude", loc.lat); set("longitude", loc.lng); }} />
+        <LocationPicker onLocationSelect={(loc) => { set("location", loc.address); set("latitude", loc.lat); set("longitude", loc.lng); }} />
       </div>
     </div>
   );
@@ -275,22 +275,22 @@ export default function CreateListingModal({
   onClose,
   onSuccess,
 }: CreateListingModalProps) {
-  const [activeType, setActiveType] = useState<ListingType>("room-vacancy");
+  const [activeType, setActiveType] = useState<ListingType>("RoomVacancy");
   const [formData, setFormData] = useState<Record<string, unknown>>({
-      type: "room-vacancy",
-      totalBeds: 1,
-      availableBeds: 1,
-      amenities: []
+    type: "RoomVacancy",
+    totalBeds: 1,
+    availableBeds: 1,
+    amenities: []
   });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     setFormData({
-        type: activeType,
-        totalBeds: 1,
-        availableBeds: 1,
-        amenities: []
+      type: activeType,
+      totalBeds: 1,
+      availableBeds: 1,
+      amenities: []
     });
     setStatus("idle");
     setErrorMsg("");
@@ -350,11 +350,10 @@ export default function CreateListingModal({
               key={t.id}
               type="button"
               onClick={() => setActiveType(t.id)}
-              className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all border-2 shrink-0 ${
-                activeType === t.id
+              className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all border-2 shrink-0 ${activeType === t.id
                   ? `${t.color} text-white border-transparent shadow-xl -translate-y-1`
                   : "bg-gray-50 text-gray-400 border-gray-50 hover:border-gray-100"
-              }`}
+                }`}
             >
               {t.icon}
               {t.label}
@@ -365,33 +364,33 @@ export default function CreateListingModal({
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
           <div className="px-10 py-8 overflow-y-auto flex-1 custom-scrollbar">
-            {(activeType === "room" || activeType === "room-vacancy") && (
-              <RoomForm 
-                data={formData} 
-                onChange={setFormData} 
-                isVacancy={activeType === "room-vacancy"} 
+            {(activeType === "room" || activeType === "RoomVacancy") && (
+              <RoomForm
+                data={formData}
+                onChange={setFormData}
+                isVacancy={activeType === "RoomVacancy"}
               />
             )}
             {activeType === "Mess" && <MessForm data={formData} onChange={setFormData} />}
-            {activeType === "food-stall" && <FoodStallForm data={formData} onChange={setFormData} />}
+            {activeType === "FoodStall" && <FoodStallForm data={formData} onChange={setFormData} />}
           </div>
 
           {/* Footer Actions */}
           <div className="px-10 py-6 bg-gray-50 border-t border-gray-100 flex items-center justify-between gap-6 shrink-0">
             <div className="flex-1">
-                {status === "error" && (
+              {status === "error" && (
                 <div className="flex items-center gap-2 text-red-500 text-xs font-bold animate-in slide-in-from-left-2 transition-all">
-                    <AlertCircle className="w-4 h-4 shrink-0" />
-                    <span className="line-clamp-2">{errorMsg}</span>
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span className="line-clamp-2">{errorMsg}</span>
                 </div>
-                )}
-                {status === "success" && (
+              )}
+              {status === "success" && (
                 <div className="flex items-center gap-2 text-emerald-600 text-xs font-bold animate-in slide-in-from-left-2">
-                    <CheckCircle2 className="w-4 h-4 shrink-0" />
-                    Post listed successfully!
+                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                  Post listed successfully!
                 </div>
-                )}
-                {status === "idle" && <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Double check your details</p>}
+              )}
+              {status === "idle" && <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Double check your details</p>}
             </div>
 
             <div className="flex gap-4">

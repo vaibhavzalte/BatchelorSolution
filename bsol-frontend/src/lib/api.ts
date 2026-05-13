@@ -1,11 +1,17 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/uv-api/v1";
 const MGMT_NAME = "listingManagment";
+const ROOM_MGMT_NAME = "roomManagment";
+
+function getMgmtName(type: ListingType): string {
+  if (type === "Room" || type === "RoomVacancy") return ROOM_MGMT_NAME;
+  return MGMT_NAME;
+}
 
 const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type ListingType = "Room" | "Mess" | "food-stall" | "room-vacancy";
+export type ListingType = "Room" | "Mess" | "FoodStall" | "RoomVacancy";
 
 export interface RoomVacancy {
   id?: number;
@@ -102,12 +108,32 @@ export type AnyListing = Room | Mess | FoodStall | RoomVacancy;
 
 // ─── API calls ────────────────────────────────────────────────────────────────
 
-export async function getListings(type: ListingType): Promise<AnyListing[]> {
-  const res = await fetch(`${BASE_URL}/${MGMT_NAME}/${type}`, {
+export async function getListings(
+  type: ListingType,
+  params?: Record<string, string | number | boolean>
+): Promise<AnyListing[]> {
+  const url = new URL(`${BASE_URL}/${getMgmtName(type)}/${type}`);
+  
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== "" && value !== null) {
+        url.searchParams.append(key, String(value));
+      }
+    });
+  }
+
+  console.log(`[getListings] Calling API: ${url.toString()}`);
+
+  const res = await fetch(url.toString(), {
     headers: { "Content-Type": "application/json" },
   });
+  
+  console.log(`[getListings] Response Status: ${res.status} ${res.statusText}`);
+
   if (!res.ok) throw new Error(`Failed to fetch listings: ${res.statusText}`);
-  return res.json();
+  const data = await res.json();
+  console.log(`[getListings] Received ${data.length} items`);
+  return data;
 }
 
 export async function createListing(
@@ -116,13 +142,13 @@ export async function createListing(
 ): Promise<AnyListing> {
   // Payload cleanup and normalization for specific types
   const finalPayload = { ...payload };
-  
-  const res = await fetch(`${BASE_URL}/${MGMT_NAME}/${type}`, {
+
+  const res = await fetch(`${BASE_URL}/${getMgmtName(type)}/${type}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(finalPayload),
   });
-  
+
   if (!res.ok) {
     const errText = await res.text();
     throw new Error(`Failed to create listing: ${errText}`);
@@ -181,7 +207,7 @@ export async function createRoomListing(
     formData.append("images", file);
   });
 
-  const res = await fetch(`${BASE_URL}/${MGMT_NAME}/${type}`, {
+  const res = await fetch(`${BASE_URL}/${getMgmtName(type as ListingType)}/${type}`, {
     method: "POST",
     // Do NOT set Content-Type manually — browser sets it with the correct boundary
     body: formData,

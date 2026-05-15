@@ -33,7 +33,7 @@ const LocationPicker = dynamic(() => import("./LocationPicker"), {
 
 const TYPES: { id: ListingType; label: string; icon: React.ReactNode; color: string }[] = [
   { id: "RoomVacancy", label: "Room Vacancy", icon: <Users className="w-5 h-5" />, color: "bg-emerald-500" },
-  { id: "room", label: "Full Room/Flat", icon: <House className="w-5 h-5" />, color: "bg-indigo-500" },
+  { id: "Room", label: "Full Room/Flat", icon: <House className="w-5 h-5" />, color: "bg-indigo-500" },
   { id: "Mess", label: "Mess", icon: <CookingPot className="w-5 h-5" />, color: "bg-amber-500" },
   { id: "FoodStall", label: "Food Stall", icon: <Utensils className="w-5 h-5" />, color: "bg-pink-500" },
 ];
@@ -364,7 +364,7 @@ export default function CreateListingModal({
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
           <div className="px-10 py-8 overflow-y-auto flex-1 custom-scrollbar">
-            {(activeType === "room" || activeType === "RoomVacancy") && (
+            {(activeType === "Room" || activeType === "RoomVacancy") && (
               <RoomForm
                 data={formData}
                 onChange={setFormData}

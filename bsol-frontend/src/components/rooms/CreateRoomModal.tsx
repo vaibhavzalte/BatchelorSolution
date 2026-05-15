@@ -38,7 +38,7 @@ const LocationPicker = dynamic(() => import("../LocationPicker"), {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const ROOM_TYPES = ["1RK", "1 BHK", "2 BHK", "3 BHK", "4 BHK", "Entire Flat"];
+const ROOM_TYPES = ["1 RK", "1 BHK", "2 BHK", "3 BHK", "4 BHK", "Entire Flat"];
 const AVAILABLE_FOR = ["Boys", "Girls", "Family", "Any"];
 const AMENITIES_OPTIONS = [
   { key: "wifi", label: "Wi-Fi" },

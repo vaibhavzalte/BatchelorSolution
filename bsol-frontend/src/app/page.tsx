@@ -1,17 +1,37 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
-import SearchFilter, { SearchState } from "@/components/SearchFilter";
-import ListingCard from "@/components/ListingCard";
-import CreateListingModal from "@/components/CreateListingModal";
-import CreateRoomModal from "@/components/rooms/CreateRoomModal";
-import { getListings, AnyListing, ListingType, Room, Mess, FoodStall, RoomVacancy } from "@/lib/api";
-import { Plus, House, CookingPot, Utensils, Loader2, AlertCircle, RefreshCw, Search } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 import { useCategory } from "@/contexts/CategoryContext";
+import { getListings, AnyListing, ListingType } from "@/lib/api";
+import { Plus, Loader2, AlertCircle, RefreshCw, Search, House, CookingPot, Utensils } from "lucide-react";
 
-// Mapping from category context IDs ➜ backend ListingType
+// Shared Components
+import CategoryTabs from "@/components/shared/CategoryTabs";
+import PostsSearch from "@/components/shared/PostsSearch";
+import { SearchState } from "@/components/shared/BaseSearch";
+
+// Room Components
+import RoomCard from "@/components/rooms/RoomCard";
+import RoomSearch from "@/components/rooms/RoomSearch";
+import CreateRoomModal from "@/components/rooms/CreateRoomModal";
+
+// Vacancy Components
+import VacancyCard from "@/components/vacancies/VacancyCard";
+import VacancySearch from "@/components/vacancies/VacancySearch";
+
+// Mess Components
+import MessCard from "@/components/mess/MessCard";
+import MessSearch from "@/components/mess/MessSearch";
+
+// Food Components
+import FoodCard from "@/components/food/FoodCard";
+import FoodSearch from "@/components/food/FoodSearch";
+
+// Other Components
+import CreateListingModal from "@/components/CreateListingModal";
+
 const CATEGORY_TO_TYPE: Record<string, ListingType | null> = {
-  all: null,
+  all: "Room", // Default type for the "Posts" category
   rooms: "Room",
   mess: "Mess",
   food: "FoodStall",
@@ -27,71 +47,7 @@ interface TypedListing {
   data: AnyListing;
 }
 
-const DEFAULT_SEARCH: SearchState = { keyword: "", location: "", filters: {} };
-
-// ─── Client-side filter logic ──────────────────────────────────────────────────
-
-function matchesSearch(item: TypedListing, search: SearchState): boolean {
-  const { keyword, location, filters } = search;
-  const d = item.data as Record<string, unknown>;
-
-  // ── keyword match ──
-  if (keyword) {
-    const kw = keyword.toLowerCase();
-    const searchableText = [
-      d.title, d.description, d.stallName, d.location, d.area, d.city,
-      d.address, d.ownerName, d.roomType, d.foodType, d.mealType
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-
-    if (!searchableText.includes(kw)) return false;
-  }
-
-  // ── location match ──
-  if (location) {
-    const loc = location.toLowerCase();
-    const locationText = [d.location, d.area, d.city, d.address]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-    if (!locationText.includes(loc)) return false;
-  }
-
-  // ── per-type filter match ──
-  for (const [key, val] of Object.entries(filters)) {
-    if (val === "" || val === undefined) continue;
-
-    // Range filters (maxRent, maxMonthlyFee)
-    if (key === "maxRent") {
-      const rent = (d.rent as number | undefined) ?? 0;
-      if (rent > (val as number)) return false;
-      continue;
-    }
-    if (key === "maxMonthlyFee") {
-      const fee = (d.monthlyFee as number | undefined) ?? 0;
-      if (fee > (val as number)) return false;
-      continue;
-    }
-
-    // Toggle / boolean filters
-    if (val === true) {
-      if (!d[key]) return false;
-      continue;
-    }
-
-    // String/select filters
-    if (typeof val === "string") {
-      const fieldVal = (d[key] as string | undefined) ?? "";
-      if (fieldVal.toLowerCase() !== val.toLowerCase()) return false;
-    }
-  }
-
-  return true;
-}
-
-// ─── Main Page ────────────────────────────────────────────────────────────────
+const DEFAULT_SEARCH: SearchState = { keyword: "", location: "Pune", filters: { freshness: "1w" } };
 
 export default function Home() {
   const { activeCategory } = useCategory();
@@ -107,37 +63,15 @@ export default function Home() {
 
     try {
       const mappedType = CATEGORY_TO_TYPE[activeCategory];
-
-      // Build parameters for the API call
       const params: Record<string, any> = {
         ...search.filters,
         city: search.location,
         keyword: search.keyword,
       };
 
-      // Default freshness for Rooms if not explicitly selected in the search filters
-      // We check if it's missing entirely (e.g. on initial load)
-      if (mappedType === "Room" && params.freshness === undefined) {
-        params.freshness = "1w";
-      }
-
-      console.log(`[fetchListings] Fetching ${activeCategory} (${mappedType}) with params:`, params);
-
-      if (mappedType !== null && mappedType !== undefined) {
+      if (mappedType) {
         const items = await getListings(mappedType, params);
         setListings(items.map((d) => ({ type: mappedType, data: d })));
-      } else if (activeCategory === "all") {
-        const results = await Promise.allSettled(
-          ALL_TYPES.map((t) => getListings(t, params))
-        );
-        const merged: TypedListing[] = [];
-        ALL_TYPES.forEach((t, i) => {
-          const r = results[i];
-          if (r.status === "fulfilled") {
-            r.value.forEach((d) => merged.push({ type: t, data: d }));
-          }
-        });
-        setListings(merged);
       } else {
         setListings([]);
       }
@@ -148,82 +82,70 @@ export default function Home() {
     }
   }, [activeCategory, search]);
 
-  // Reset search when category changes
   useEffect(() => {
     setSearch(DEFAULT_SEARCH);
   }, [activeCategory]);
 
-  // Refetch when category OR search state changes
   useEffect(() => {
     fetchListings();
   }, [fetchListings]);
 
-  // No longer need client-side filtering as backend handles it
-  const filteredListings = listings;
+  const renderSearchComponent = () => {
+    const props = { onSearch: setSearch, currentSearch: search };
+    switch (activeCategory) {
+      case "rooms": return <RoomSearch {...props} />;
+      case "vacancies": return <VacancySearch {...props} />;
+      case "mess": return <MessSearch {...props} />;
+      case "food": return <FoodSearch {...props} />;
+      default: return <PostsSearch {...props} />;
+    }
+  };
 
-  const hasSearch =
-    search.keyword !== "" ||
-    search.location !== "" ||
-    Object.keys(search.filters).length > 0;
+  const renderListingCard = (item: TypedListing, idx: number) => {
+    switch (item.type) {
+      case "Room": return <RoomCard key={idx} room={item.data as any} />;
+      case "RoomVacancy": return <VacancyCard key={idx} vacancy={item.data as any} />;
+      case "Mess": return <MessCard key={idx} mess={item.data as any} />;
+      case "FoodStall": return <FoodCard key={idx} stall={item.data as any} />;
+      default: return null;
+    }
+  };
 
-  const mappedType = CATEGORY_TO_TYPE[activeCategory];
-  const hasBackendType = mappedType !== null && mappedType !== undefined;
-  const isAllCategory = activeCategory === "all";
+  const hasSearch = search.keyword !== "" || Object.keys(search.filters).length > 1; // >1 because freshness is default
 
   return (
     <>
-      {/* Dedicated Room modal — only shown when in rooms category */}
       <CreateRoomModal
         isOpen={isModalOpen && activeCategory === "rooms"}
         onClose={() => setIsModalOpen(false)}
         onSuccess={fetchListings}
       />
-      {/* Generic modal for all other types */}
       <CreateListingModal
         isOpen={isModalOpen && activeCategory !== "rooms"}
         onClose={() => setIsModalOpen(false)}
         onSuccess={fetchListings}
       />
 
-      <div className="flex flex-col pb-24">
-        <SearchFilter
-          onSearch={(state) => setSearch(state)}
-          currentSearch={search}
-        />
+      <div className="flex flex-col pb-24 pt-20">
+        <CategoryTabs />
+        
+        <div className="max-w-7xl mx-auto px-6 w-full mb-8 relative z-50">
+          {renderSearchComponent()}
+        </div>
 
-        {/* ── Section Header ───────────────────────────────────────────── */}
-        <main className="max-w-7xl mx-auto px-6 mt-4 w-full">
+        <main className="max-w-7xl mx-auto px-6 w-full">
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-2xl font-black text-gray-900">
-                {loading
-                  ? "Loading listings…"
-                  : hasSearch
-                    ? `${filteredListings.length} result${filteredListings.length !== 1 ? "s" : ""} found`
-                    : filteredListings.length > 0
-                      ? `${filteredListings.length} listing${filteredListings.length !== 1 ? "s" : ""}`
-                      : "No listings yet"}
+                {loading ? "Searching..." : `${listings.length} Results Found`}
               </h1>
-              <p className="text-sm text-gray-400 font-medium mt-0.5">
-                {isAllCategory ? "All categories" : `Showing: ${activeCategory}`}
-                {hasSearch && ` · Filtered`}
+              <p className="text-sm text-gray-400 font-medium mt-0.5 uppercase tracking-widest">
+                {activeCategory === "all" ? "Latest Listings" : `Category: ${activeCategory}`}
               </p>
             </div>
 
             <div className="flex items-center gap-3">
-              {/* Clear Search */}
-              {hasSearch && (
-                <button
-                  id="clear-search-btn"
-                  onClick={() => setSearch(DEFAULT_SEARCH)}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl font-bold text-sm transition-all active:scale-95"
-                >
-                  Clear filters
-                </button>
-              )}
-              {/* Post Listing CTA */}
               <button
-                id="post-listing-btn"
                 onClick={() => setIsModalOpen(true)}
                 className="flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-black text-white rounded-2xl font-black text-sm shadow-lg hover:shadow-2xl hover:-translate-y-0.5 transition-all active:scale-95"
               >
@@ -233,85 +155,31 @@ export default function Home() {
             </div>
           </div>
 
-          {/* ── States ──────────────────────────────────────────────── */}
-          {loading && (
+          {loading ? (
             <div className="flex flex-col items-center justify-center py-24 gap-4">
-              <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center">
-                <Loader2 className="w-8 h-8 text-gray-400 animate-spin" />
-              </div>
-              <p className="text-gray-400 font-semibold text-sm">Fetching listings from database…</p>
+              <Loader2 className="w-10 h-10 text-indigo-500 animate-spin" />
+              <p className="text-gray-400 font-bold text-sm tracking-widest uppercase">Fetching listings...</p>
             </div>
-          )}
-
-          {error && !loading && (
-            <div className="flex flex-col items-center justify-center py-24 gap-4">
-              <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center">
-                <AlertCircle className="w-8 h-8 text-red-400" />
-              </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-24 gap-6">
+              <AlertCircle className="w-12 h-12 text-red-400" />
               <div className="text-center">
-                <p className="text-gray-800 font-black text-base">Could not connect to backend</p>
+                <p className="text-gray-900 font-black text-lg">Backend Unreachable</p>
                 <p className="text-gray-400 text-sm mt-1">{error}</p>
               </div>
-              <button
-                onClick={fetchListings}
-                className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-bold hover:bg-black transition-all"
-              >
-                <RefreshCw className="w-4 h-4" /> Retry
-              </button>
+              <button onClick={fetchListings} className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl font-bold transition-all"><RefreshCw className="w-4 h-4" /> Retry</button>
             </div>
-          )}
-
-          {/* No results after filtering */}
-          {!loading && !error && listings.length > 0 && filteredListings.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-24 gap-6">
-              <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center">
-                <Search className="w-8 h-8 text-gray-300" />
-              </div>
-              <div className="text-center">
-                <p className="text-gray-800 font-black text-lg">No results match your filters</p>
-                <p className="text-gray-400 text-sm mt-1 max-w-xs">
-                  Try adjusting your search keyword or removing some filters.
-                </p>
-              </div>
-              <button
-                onClick={() => setSearch(DEFAULT_SEARCH)}
-                className="flex items-center gap-2 px-7 py-3.5 bg-gray-900 text-white rounded-2xl font-black text-sm shadow-lg hover:bg-black hover:-translate-y-0.5 transition-all active:scale-95"
-              >
-                Clear filters
-              </button>
+          ) : listings.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-32 gap-6 bg-gray-50/50 rounded-[3rem] border-2 border-dashed border-gray-100">
+               <Search className="w-12 h-12 text-gray-200" />
+               <div className="text-center">
+                 <p className="text-gray-900 font-black text-xl">No listings found</p>
+                 <p className="text-gray-400 text-sm mt-2 max-w-xs mx-auto">Try adjusting your filters or search area to find more results.</p>
+               </div>
             </div>
-          )}
-
-          {!loading && !error && listings.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-24 gap-6">
-              <div className="flex gap-3">
-                {[House, CookingPot, Utensils].map((Icon, i) => (
-                  <div key={i} className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center">
-                    <Icon className="w-6 h-6 text-gray-300" />
-                  </div>
-                ))}
-              </div>
-              <div className="text-center">
-                <p className="text-gray-800 font-black text-lg">No listings here yet</p>
-                <p className="text-gray-400 text-sm mt-1 max-w-xs">
-                  Be the first to post a room, mess, or food stall in this category.
-                </p>
-              </div>
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="flex items-center gap-2 px-7 py-3.5 bg-gray-900 text-white rounded-2xl font-black text-sm shadow-lg hover:bg-black hover:-translate-y-0.5 transition-all active:scale-95"
-              >
-                <Plus className="w-4 h-4" /> Post First Listing
-              </button>
-            </div>
-          )}
-
-          {/* ── Listings Grid ──────────────────────────────────────────── */}
-          {!loading && !error && filteredListings.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-16">
-              {filteredListings.map((item, idx) => (
-                <ListingCard key={idx} type={item.type} data={item.data} />
-              ))}
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+              {listings.map((item, idx) => renderListingCard(item, idx))}
             </div>
           )}
         </main>

@@ -46,4 +46,10 @@ public class LocalFileStorageService implements FileStorageService {
         log.info("file stored locally" + fileUrls);
         return fileUrls;
     }
+
+    @Override
+    public byte[] loadFile(String fileUrl) throws IOException {
+        String filename = fileUrl.replace("/uploads/", "");
+        return Files.readAllBytes(this.rootLocation.resolve(filename));
+    }
 }

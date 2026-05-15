@@ -38,6 +38,7 @@ export interface RoomVacancy {
   ownerContact?: string;
   ownerEmail?: string;
   images?: string[];
+  videos?: string[];
 }
 
 export interface Room {
@@ -67,6 +68,8 @@ export interface Room {
   ownerEmail?: string;
   status?: string;
   createdBy?: string;
+  images?: string[];
+  videos?: string[];
 }
 
 export interface Mess {
@@ -89,6 +92,8 @@ export interface Mess {
   ownerEmail?: string;
   status?: string;
   createdBy?: string;
+  images?: string[];
+  videos?: string[];
 }
 
 export interface FoodStall {
@@ -102,6 +107,8 @@ export interface FoodStall {
   isOpen?: boolean;
   description?: string;
   createdBy?: string;
+  images?: string[];
+  videos?: string[];
 }
 
 export type AnyListing = Room | Mess | FoodStall | RoomVacancy;

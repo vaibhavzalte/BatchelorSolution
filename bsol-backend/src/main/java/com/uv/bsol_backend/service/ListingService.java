@@ -16,10 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.io.IOException;
 
 @Service
 @Slf4j
@@ -78,14 +76,33 @@ public class ListingService {
 
         if (entity != null && entity.getPayload() != null) {
             dto = objectMapper.readValue(entity.getPayload(), dtoClass);
-            dto.setId(entity.getId());
-            dto.setPrimaryId(entity.getPrimaryId());
-            dto.setCity(entity.getCity());
-            dto.setType(entity.getType());
-            dto.setSubType(entity.getSubType());
-            dto.setStatus(entity.getStatus());
-            dto.setLatitude(entity.getLatitude());
-            dto.setLongitude(entity.getLongitude());
+            if (dto != null) {
+                if (dto.getImages() != null) {
+                    List<String> base64Images = new ArrayList<>();
+                    for (String url : dto.getImages()) {
+                        try {
+                            byte[] bytes = fileStorageService.loadFile(url);
+                            String base64 = Base64.getEncoder().encodeToString(bytes);
+                            String mimeType = "image/jpeg";
+                            if (url.toLowerCase().endsWith(".png")) mimeType = "image/png";
+                            else if (url.toLowerCase().endsWith(".gif")) mimeType = "image/gif";
+                            else if (url.toLowerCase().endsWith(".webp")) mimeType = "image/webp";
+                            base64Images.add("data:" + mimeType + ";base64," + base64);
+                        } catch (IOException e) {
+                            log.error("Failed to load image: " + url, e);
+                        }
+                    }
+                    dto.setImages(base64Images);
+                }
+                dto.setId(entity.getId());
+                dto.setPrimaryId(entity.getPrimaryId());
+                dto.setCity(entity.getCity());
+                dto.setType(entity.getType());
+                dto.setSubType(entity.getSubType());
+                dto.setStatus(entity.getStatus());
+                dto.setLatitude(entity.getLatitude());
+                dto.setLongitude(entity.getLongitude());
+            }
         }
 
         return dto;

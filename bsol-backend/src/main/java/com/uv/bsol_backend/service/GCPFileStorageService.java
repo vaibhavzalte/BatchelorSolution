@@ -41,4 +41,10 @@ public class GCPFileStorageService implements FileStorageService {
         }
         return fileUrls;
     }
+
+    @Override
+    public byte[] loadFile(String fileUrl) throws IOException {
+        String filename = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+        return storage.readAllBytes(bucketName, filename);
+    }
 }

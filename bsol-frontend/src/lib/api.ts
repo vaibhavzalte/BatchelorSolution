@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/uv-api/v1";
+export const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/uv-api/v1";
 const MGMT_NAME = "listingManagment";
 const ROOM_MGMT_NAME = "roomManagment";
 
@@ -70,6 +70,8 @@ export interface Room {
   createdBy?: string;
   images?: string[];
   videos?: string[];
+  amenities?: string[];
+  location?: string;
 }
 
 export interface Mess {

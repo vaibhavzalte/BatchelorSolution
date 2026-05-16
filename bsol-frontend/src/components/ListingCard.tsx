@@ -5,7 +5,7 @@ import {
   UtensilsCrossed, Bath, Star, CheckCircle, Users, IndianRupee,
   MessageCircle, ExternalLink, ShieldCheck, Heart, User, Play
 } from "lucide-react";
-import { Room, Mess, FoodStall, RoomVacancy, ListingType } from "@/lib/api";
+import { Room, Mess, FoodStall, RoomVacancy, ListingType, BASE_URL } from "@/lib/api";
 import { useState } from "react";
 import MediaGallery from "./shared/MediaGallery";
 
@@ -24,7 +24,8 @@ function Badge({ label, color }: { label: string; color: string }) {
   );
 }
 
-const normalizeUrl = (url: string) => url.startsWith("data:") ? url : `http://localhost:8080${url}`;
+const IMAGE_HOST = BASE_URL.split("/uv-api")[0];
+const normalizeUrl = (url: string) => url.startsWith("data:") ? url : `${IMAGE_HOST}${url}`;
 
 // ─── Room Vacancy Card ────────────────────────────────────────────────────────
 
@@ -408,7 +409,7 @@ function MessCard({ mess, onMediaClick }: { mess: Mess; onMediaClick: (index: nu
 // ─── Food Stall Card ─────────────────────────────────────────────────────────
 
 function FoodStallCard({ stall, onMediaClick }: { stall: FoodStall; onMediaClick: (index: number) => void }) {
-  const imageUrl = (stall as any).images && (stall as any).images.length > 0 ? normalizeUrl((stall as any).images[0]) : null;
+  const imageUrl = stall.images && stall.images.length > 0 ? normalizeUrl(stall.images[0]) : null;
 
   return (
     <>

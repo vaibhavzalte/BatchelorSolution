@@ -133,7 +133,7 @@ export default function RoomCard({ room }: RoomCardProps) {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                <MapPin className="w-3.5 h-3.5" /> Neighborhood
+                <MapPin className="w-3.5 h-3.5" /> Location
               </h4>
               {room.location && room.location.startsWith("http") && (
                 <a

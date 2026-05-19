@@ -3,6 +3,8 @@ package com.uv.bsol_backend.transformer;
 import com.uv.bsol_backend.dto.RoomVacancyPayload;
 import com.uv.bsol_backend.entity.RoomVacancy;
 
+import java.util.Map;
+
 public class RoomVacancyTransformer extends BaseTransformer<RoomVacancy, RoomVacancyPayload> {
     public static final String LISTING_TYPE = "RoomVacancy";
 
@@ -36,6 +38,7 @@ public class RoomVacancyTransformer extends BaseTransformer<RoomVacancy, RoomVac
                 .ownerName(listing.getOwnerName())
                 .ownerEmail(listing.getOwnerEmail())
                 .images(listing.getImages())
+                .googleMap(listing.getGoogleMap())
                 .build();
     }
 
@@ -49,5 +52,11 @@ public class RoomVacancyTransformer extends BaseTransformer<RoomVacancy, RoomVac
     public Class<RoomVacancyPayload> getDtoClass() {
         return RoomVacancyPayload.class;
     }
-
+    @Override
+    public Map<String, String> getAdditionalAttributes() {
+        Map<String, String> attributes = new java.util.HashMap<>();
+        if (listing.getRoomType() != null) attributes.put("roomType", listing.getRoomType());
+        if (listing.getPreferredTenant() != null) attributes.put("preferredTenant", listing.getPreferredTenant());
+        return attributes;
+    }
 }

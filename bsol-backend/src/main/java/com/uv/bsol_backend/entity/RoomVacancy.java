@@ -1,6 +1,9 @@
 package com.uv.bsol_backend.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -33,18 +36,17 @@ public class RoomVacancy extends CommonListingFields {
     private OffsetDateTime availableFrom;    // Yes / No / Optional
     // 🔹 Location
     private String address;
-
     private String area;
 
 
     // 🔹 Owner Info
     private String ownerName;
-
     private String ownerContact;
-
     private String ownerEmail;
 
     // coming soon
 //    private List<String> rules;
 //    private Double rating;
+    // Google map link
+    private String googleMap;
 }

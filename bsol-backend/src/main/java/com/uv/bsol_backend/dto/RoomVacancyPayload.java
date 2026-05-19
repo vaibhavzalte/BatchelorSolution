@@ -32,15 +32,13 @@ public class RoomVacancyPayload {
     private OffsetDateTime availableFrom;    // Yes / No / Optional
     // 🔹 Location
     private String address;
-
-
     private String area;
 
 
     // 🔹 Owner Info
     private String ownerName;
-
     private String ownerContact;
-
     private String ownerEmail;
+    // 🔹 Google Map link
+    private String googleMap;
 }

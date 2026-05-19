@@ -14,10 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class CommonListingFields {
-    protected Long id;
-    protected String type;
+    protected Long id; // no need to send from frontend
+    protected String type; // no need to send from frontend
     protected String subType;
-    protected String primaryId;
+    protected String primaryId; 
     protected String city;
     protected Double latitude;
     protected Double longitude;

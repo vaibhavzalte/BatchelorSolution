@@ -1,9 +1,11 @@
 export const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/uv-api/v1";
 const MGMT_NAME = "listingManagment";
 const ROOM_MGMT_NAME = "roomManagment";
+const ROOM_VACANCY_MGMT_NAME = "roomVacancyManagment";
 
 function getMgmtName(type: ListingType): string {
-  if (type === "Room" || type === "RoomVacancy") return ROOM_MGMT_NAME;
+  if (type === "RoomVacancy") return ROOM_VACANCY_MGMT_NAME;
+  if (type === "Room") return ROOM_MGMT_NAME;
   return MGMT_NAME;
 }
 
@@ -231,6 +233,70 @@ export async function createRoomListing(
     // Log full server error to console; caller shows only a clean toast
     console.error("[createRoomListing] Server error:", errText);
     throw new Error("Could not publish the room listing. Please try again.");
+  }
+
+  return res.json();
+}
+
+// ─── Vacancy listing with multipart/form-data ────────────────────────────────────
+
+export interface VacancyPayload {
+  title: string;
+  description: string;
+  roomType: string;
+  totalVacancies: number;
+  availableBeds: number;
+  preferredTenant: string;
+  rent: number;
+  deposit: number;
+  maintenance: number;
+  brokerage: number;
+  amenities: string[];
+  availableFrom: string;
+  address: string;
+  area: string;
+  city: string;
+  location: string;
+  googleMap: string;
+  latitude: number | null;
+  longitude: number | null;
+  ownerName: string;
+  ownerContact: string;
+  ownerEmail: string;
+}
+
+export async function createVacancyListing(
+  type: string,
+  payload: VacancyPayload,
+  imageFiles: File[]
+): Promise<RoomVacancy> {
+  const oversized = imageFiles.filter((f) => f.size > MAX_IMAGE_SIZE_BYTES);
+  if (oversized.length > 0) {
+    throw new Error(
+      `These images exceed the 5 MB limit: ${oversized.map((f) => f.name).join(", ")}`
+    );
+  }
+
+  const formData = new FormData();
+
+  formData.append(
+    "listing",
+    new Blob([JSON.stringify(payload)], { type: "application/json" })
+  );
+
+  imageFiles.forEach((file) => {
+    formData.append("images", file);
+  });
+
+  const res = await fetch(`${BASE_URL}/${getMgmtName(type as ListingType)}/${type}`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    console.error("[createVacancyListing] Server error:", errText);
+    throw new Error("Could not publish the vacancy listing. Please try again.");
   }
 
   return res.json();

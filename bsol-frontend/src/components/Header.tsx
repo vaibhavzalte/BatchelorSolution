@@ -72,7 +72,7 @@ const Header = () => {
           <button
             id="header-post-listing-btn"
             onClick={() => document.getElementById("post-listing-btn")?.click()}
-            className="flex items-center gap-2 bg-gray-900 hover:bg-black text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md active:scale-95"
+            className={`flex items-center gap-2 ${activeCatData?.color || "bg-gray-900"} hover:brightness-110 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md active:scale-95`}
           >
             <Plus className="w-4 h-4" />
             Post Listing
@@ -109,7 +109,7 @@ const Header = () => {
             <div className="h-px bg-border-color my-2 mx-2" />
             <button
               onClick={() => { document.getElementById("post-listing-btn")?.click(); setIsMobileMenuOpen(false); }}
-              className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white p-3 rounded-xl font-bold shadow-md active:scale-95 transition-all mb-2"
+              className={`w-full flex items-center justify-center gap-2 ${activeCatData?.color || "bg-gray-900"} hover:brightness-110 text-white p-3 rounded-xl font-bold shadow-md active:scale-95 transition-all mb-2`}
             >
               <Plus className="w-4 h-4" /> Post Listing
             </button>

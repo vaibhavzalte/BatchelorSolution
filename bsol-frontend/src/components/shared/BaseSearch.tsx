@@ -95,7 +95,7 @@ export default function BaseSearch({
       <div className="relative z-50 bg-white/20 backdrop-blur-xl p-2 flex flex-wrap lg:flex-nowrap items-center gap-3 rounded-[2rem] border border-white/30 shadow-2xl">
         {/* City Field */}
         <div className="flex-1 min-w-[140px] p-1 relative" ref={cityDropdownRef}>
-          <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest ml-2">City</span>
+          <span className={`text-[10px] font-black ${categoryText} uppercase tracking-widest ml-2`}>City</span>
           <div
             onClick={() => setIsCityOpen(!isCityOpen)}
             className="bg-white/60 border border-gray-200 rounded-2xl p-2 h-[48px] flex items-center justify-between cursor-pointer hover:bg-white transition-all shadow-sm"
@@ -124,7 +124,7 @@ export default function BaseSearch({
                       setIsCityOpen(false);
                       setCityQuery("");
                     }}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all ${city === c ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-50"}`}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all ${city === c ? `${categoryColor} text-white` : "text-gray-600 hover:bg-gray-50"}`}
                   >
                     {c}
                   </button>
@@ -136,7 +136,7 @@ export default function BaseSearch({
 
         {/* Locality Field */}
         <div className="flex-[1.5] min-w-[200px] p-1 flex flex-col group">
-          <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest ml-2">Locality</span>
+          <span className={`text-[10px] font-black ${categoryText} uppercase tracking-widest ml-2`}>Locality</span>
           <div className="bg-white/60 border border-gray-200 rounded-2xl p-2 h-[48px] flex items-center hover:bg-white transition-all shadow-sm">
             <MapPin className="w-4 h-4 text-gray-400 ml-2 mr-2" />
             <input
@@ -152,7 +152,7 @@ export default function BaseSearch({
 
         {/* Freshness */}
         <div className="flex-1 min-w-[120px] p-1 flex flex-col group relative" ref={freshnessDropdownRef}>
-          <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest text-center">Freshness</span>
+          <span className={`text-[10px] font-black ${categoryText} uppercase tracking-widest text-center`}>Freshness</span>
           <div 
             onClick={() => setIsFreshnessOpen(!isFreshnessOpen)}
             className="bg-white/60 border border-gray-200 rounded-2xl p-2 h-[48px] flex items-center justify-center cursor-pointer hover:bg-white transition-all shadow-sm"
@@ -166,7 +166,7 @@ export default function BaseSearch({
             <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-white rounded-2xl shadow-2xl border border-gray-100 z-[1001]">
               <div className="p-1">
                 {[{ label: "Past 24 hr", value: "24h" }, { label: "1 day", value: "1d" }, { label: "4 days", value: "4d" }, { label: "1 week", value: "1w" }, { label: "All Time", value: "" }].map(opt => (
-                  <button key={opt.value} onClick={() => { setFreshness(opt.value); setIsFreshnessOpen(false); }} className={`w-full text-center px-3 py-2 rounded-lg text-[11px] font-bold transition-all ${freshness === opt.value ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-50"}`}>
+                  <button key={opt.value} onClick={() => { setFreshness(opt.value); setIsFreshnessOpen(false); }} className={`w-full text-center px-3 py-2 rounded-lg text-[11px] font-bold transition-all ${freshness === opt.value ? `${categoryColor} text-white` : "text-gray-600 hover:bg-gray-50"}`}>
                     {opt.label}
                   </button>
                 ))}
@@ -177,7 +177,7 @@ export default function BaseSearch({
 
         {/* Rent Sort */}
         <div className="flex-1 min-w-[120px] p-1 flex flex-col group relative" ref={rentSortDropdownRef}>
-          <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest text-center">Rent Sort</span>
+          <span className={`text-[10px] font-black ${categoryText} uppercase tracking-widest text-center`}>Rent Sort</span>
           <div 
             onClick={() => setIsRentSortOpen(!isRentSortOpen)}
             className="bg-white/60 border border-gray-200 rounded-2xl p-2 h-[48px] flex items-center justify-center cursor-pointer hover:bg-white transition-all shadow-sm"
@@ -191,7 +191,7 @@ export default function BaseSearch({
             <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-white rounded-2xl shadow-2xl border border-gray-100 z-[1001]">
               <div className="p-1">
                 {[{ label: "Any Price", value: "" }, { label: "Low to High", value: "low-high" }, { label: "High to Low", value: "high-low" }].map(opt => (
-                  <button key={opt.value} onClick={() => { setRentSort(opt.value); setIsRentSortOpen(false); }} className={`w-full text-center px-3 py-2 rounded-lg text-[11px] font-bold transition-all ${rentSort === opt.value ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-50"}`}>
+                  <button key={opt.value} onClick={() => { setRentSort(opt.value); setIsRentSortOpen(false); }} className={`w-full text-center px-3 py-2 rounded-lg text-[11px] font-bold transition-all ${rentSort === opt.value ? `${categoryColor} text-white` : "text-gray-600 hover:bg-gray-50"}`}>
                     {opt.label}
                   </button>
                 ))}
@@ -213,7 +213,7 @@ export default function BaseSearch({
         {/* Search Button */}
         <button
           onClick={handleSearch}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 h-[48px] rounded-2xl font-black text-sm tracking-widest transition-all shadow-xl shadow-indigo-200 flex items-center justify-center gap-2"
+          className={`${categoryColor} hover:brightness-110 text-white px-8 h-[48px] rounded-2xl font-black text-sm tracking-widest transition-all shadow-xl shadow-gray-200/50 flex items-center justify-center gap-2`}
         >
           <Search className="w-4 h-4" />
           FIND

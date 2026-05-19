@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  Users, MapPin, Phone, Wifi, Wind, 
+import {
+  Users, MapPin, Phone, Wifi, Wind,
   Bath, IndianRupee, MessageCircle, ShieldCheck, User,
   Check, Copy, Receipt, Mail
 } from "lucide-react";
@@ -44,11 +44,11 @@ export default function VacancyCard({ vacancy }: VacancyCardProps) {
 
   return (
     <>
-      <MediaGallery 
-        isOpen={galleryOpen} 
-        onClose={() => setGalleryOpen(false)} 
-        media={allMedia} 
-        initialIndex={initialMediaIndex} 
+      <MediaGallery
+        isOpen={galleryOpen}
+        onClose={() => setGalleryOpen(false)}
+        media={allMedia}
+        initialIndex={initialMediaIndex}
       />
 
       <div className="group relative bg-white p-2 rounded-[2rem] shadow-sm hover:shadow-2xl hover:shadow-emerald-500/10 border border-gray-100 overflow-hidden flex flex-col transition-all duration-500 hover:-translate-y-2 h-full">
@@ -85,7 +85,7 @@ export default function VacancyCard({ vacancy }: VacancyCardProps) {
             </h3>
             <div className="flex items-center gap-3 mt-3">
               <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-100/50 px-3 py-1.5 rounded-xl border border-emerald-200">
-                {vacancy.availableBeds} Seats Available
+                {(vacancy as any).totalVacancies || vacancy.availableBeds} Seats Available
               </div>
               {vacancy.preferredTenant && (
                 <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">

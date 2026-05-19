@@ -18,6 +18,7 @@ import CreateRoomModal from "@/components/rooms/CreateRoomModal";
 // Vacancy Components
 import VacancyCard from "@/components/vacancies/VacancyCard";
 import VacancySearch from "@/components/vacancies/VacancySearch";
+import CreateVacancyModal from "@/components/vacancies/CreateVacancyModal";
 
 // Mess Components
 import MessCard from "@/components/mess/MessCard";
@@ -50,7 +51,7 @@ interface TypedListing {
 const DEFAULT_SEARCH: SearchState = { keyword: "", location: "Pune", filters: { freshness: "1w" } };
 
 export default function Home() {
-  const { activeCategory } = useCategory();
+  const { activeCategory, activeCatData } = useCategory();
   const [listings, setListings] = useState<TypedListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -120,8 +121,13 @@ export default function Home() {
         onClose={() => setIsModalOpen(false)}
         onSuccess={fetchListings}
       />
+      <CreateVacancyModal
+        isOpen={isModalOpen && activeCategory === "vacancies"}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={fetchListings}
+      />
       <CreateListingModal
-        isOpen={isModalOpen && activeCategory !== "rooms"}
+        isOpen={isModalOpen && activeCategory !== "rooms" && activeCategory !== "vacancies"}
         onClose={() => setIsModalOpen(false)}
         onSuccess={fetchListings}
       />
@@ -147,7 +153,7 @@ export default function Home() {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-black text-white rounded-2xl font-black text-sm shadow-lg hover:shadow-2xl hover:-translate-y-0.5 transition-all active:scale-95"
+                className={`flex items-center gap-2 px-6 py-3 ${activeCatData?.color || "bg-gray-900"} hover:brightness-110 text-white rounded-2xl font-black text-sm shadow-lg hover:shadow-2xl hover:-translate-y-0.5 transition-all active:scale-95`}
               >
                 <Plus className="w-4 h-4" />
                 Post Listing

@@ -3,32 +3,104 @@
 @theme {
   --font-sans: "Inter", var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
-  
+
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
   --color-accent: var(--accent);
-  
+
   --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Theme variables mapped to Tailwind v4 class names */
+  --color-room-primary: var(--room-primary);
+  --color-room-primary-hover: var(--room-primary-hover);
+  --color-room-primary-light: var(--room-primary-light);
+
+  --color-vacancy-primary: var(--vacancy-primary);
+  --color-vacancy-primary-hover: var(--vacancy-primary-hover);
+  --color-vacancy-primary-light: var(--vacancy-primary-light);
+
+  --color-roommate-primary: var(--roommate-primary);
+  --color-roommate-primary-hover: var(--roommate-primary-hover);
+  --color-roommate-primary-light: var(--roommate-primary-light);
+
+  --color-food-primary: var(--food-primary);
+  --color-food-primary-hover: var(--food-primary-hover);
+  --color-food-primary-light: var(--food-primary-light);
+
+  --color-mess-primary: var(--mess-primary);
+  --color-mess-primary-hover: var(--mess-primary-hover);
+  --color-mess-primary-light: var(--mess-primary-light);
+
+  --color-study-primary: var(--study-primary);
+  --color-study-primary-hover: var(--study-primary-hover);
+  --color-study-primary-light: var(--study-primary-light);
+
+  --color-post-primary: var(--post-primary);
+  --color-post-primary-hover: var(--post-primary-hover);
+  --color-post-primary-light: var(--post-primary-light);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-card-bg: var(--card-bg);
 }
 
 :root {
   /* Color Palette - Premium Light Theme */
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
   --secondary: #10b981;
   --accent: #f59e0b;
-  
+
   --background: #f8fafc;
   --foreground: #0f172a;
-  
+
   --card-bg: rgba(255, 255, 255, 0.9);
   --border-color: #e2e8f0;
-  
+
   /* Glassmorphism for Light Theme */
   --glass-bg: rgba(255, 255, 255, 0.5);
   --glass-border: rgba(99, 102, 241, 0.1);
+
+  /* Module-specific theme colors */
+  --room-primary: #2563eb;
+  /* Blue */
+  --room-primary-hover: #1d4ed8;
+  --room-primary-light: #eff6ff;
+
+  --vacancy-primary: #e11d48;
+  /* Pink/Red */
+  --vacancy-primary-hover: #be123c;
+  --vacancy-primary-light: #fff1f2;
+
+  --roommate-primary: #7c3aed;
+  /* Purple */
+  --roommate-primary-hover: #6d28d9;
+  --roommate-primary-light: #f5f3ff;
+
+  --food-primary: #db2777;
+  /* Pink */
+  --food-primary-hover: #be185d;
+  --food-primary-light: #fdf2f8;
+
+  --mess-primary: #ea580c;
+  /* Orange */
+  --mess-primary-hover: #c2410c;
+  --mess-primary-light: #fff7ed;
+
+  --study-primary: #059669;
+  /* Green */
+  --study-primary-hover: #047857;
+  --study-primary-light: #ecfdf5;
+
+  --post-primary: #ea580c;
+  /* Orange */
+  --post-primary-hover: #c2410c;
+  --post-primary-light: #fff7ed;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
 }
 
 body {
@@ -56,13 +128,16 @@ body {
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--background);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--border-color);
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
 }

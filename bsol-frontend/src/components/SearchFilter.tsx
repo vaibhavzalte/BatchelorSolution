@@ -321,7 +321,7 @@ export default function SearchFilter({ onSearch, currentSearch }: SearchFilterPr
             {/* Freshness Field */}
             <div className="flex-1 min-w-[120px] p-1 flex flex-col group relative" ref={freshnessDropdownRef}>
               <span className="text-sm font-black text-indigo-600 uppercase tracking-widest text-center">Freshness</span>
-              <div 
+              <div
                 onClick={() => setIsFreshnessOpen(!isFreshnessOpen)}
                 className="bg-white/40 border border-black rounded-xl p-2 h-[44px] flex items-center justify-center relative hover:bg-white/60 transition-all cursor-pointer"
               >
@@ -330,7 +330,7 @@ export default function SearchFilter({ onSearch, currentSearch }: SearchFilterPr
                 </span>
                 <ChevronDown className={`ml-2 w-3 h-3 text-gray-400 transition-transform ${isFreshnessOpen ? "rotate-180" : ""}`} />
               </div>
-              
+
               {isFreshnessOpen && (
                 <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-white/90 backdrop-blur-2xl rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[1001] animate-in fade-in zoom-in-95 duration-200">
                   <div className="p-1">
@@ -360,7 +360,7 @@ export default function SearchFilter({ onSearch, currentSearch }: SearchFilterPr
             {/* Price Sort Field */}
             <div className="flex-1 min-w-[120px] p-1 flex flex-col group relative" ref={rentSortDropdownRef}>
               <span className="text-sm font-black text-indigo-600 uppercase tracking-widest text-center">Rent Sort</span>
-              <div 
+              <div
                 onClick={() => setIsRentSortOpen(!isRentSortOpen)}
                 className="bg-white/40 border border-black rounded-xl p-2 h-[44px] flex items-center justify-center relative hover:bg-white/60 transition-all cursor-pointer"
               >
@@ -397,7 +397,7 @@ export default function SearchFilter({ onSearch, currentSearch }: SearchFilterPr
             {/* Available For Field */}
             <div className="flex-1 min-w-[120px] p-1 flex flex-col group relative" ref={availableForDropdownRef}>
               <span className="text-sm font-black text-indigo-600 uppercase tracking-widest text-center">Available For</span>
-              <div 
+              <div
                 onClick={() => setIsAvailableForOpen(!isAvailableForOpen)}
                 className="bg-white/40 border border-black rounded-xl p-2 h-[44px] flex items-center justify-center relative hover:bg-white/60 transition-all cursor-pointer"
               >

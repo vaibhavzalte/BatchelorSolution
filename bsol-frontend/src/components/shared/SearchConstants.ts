@@ -1,13 +1,13 @@
-import { 
-  Milestone, UserRound, UsersRound, 
-  House, Utensils, CookingPot, Library 
+import {
+  Milestone, UserRound, UsersRound,
+  House, Utensils, CookingPot, Library
 } from "lucide-react";
 
 export const INDIAN_CITIES = [
-  "Pune", "Nashik", "Mumbai", "Nagpur", "Bangalore", 
-  "Hyderabad", "Delhi", "Chennai", "Kolkata", "Ahmedabad", 
-  "Surat", "Jaipur", "Lucknow", "Kanpur", "Indore", 
-  "Thane", "Bhopal", "Visakhapatnam", "Pimpri-Chinchwad", 
+  "Pune", "Nashik", "Mumbai", "Nagpur", "Bangalore",
+  "Hyderabad", "Delhi", "Chennai", "Kolkata", "Ahmedabad",
+  "Surat", "Jaipur", "Lucknow", "Kanpur", "Indore",
+  "Thane", "Bhopal", "Visakhapatnam", "Pimpri-Chinchwad",
   "Patna", "Vadodara"
 ];
 

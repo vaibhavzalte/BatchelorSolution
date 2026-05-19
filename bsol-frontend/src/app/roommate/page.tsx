@@ -9,13 +9,13 @@ import ListingCard from "@/components/common/ListingCard";
 import Pagination from "@/components/common/Pagination";
 import CreateListing from "@/components/common/CreateListing";
 import EmptyState from "@/components/common/EmptyState";
-import { FILTERS, MODULE_TITLE, MODULE_SUBTITLE } from "./constants";
-import { getListings, FoodStall } from "@/lib/api";
+import { FILTERS, MODULE_TITLE, MODULE_SUBTITLE, MOCK_ROOMMATES } from "./constants";
+import { getListings } from "@/lib/api";
 
 const DEFAULT_SEARCH: SearchState = { keyword: "", location: "Pune", filters: {} };
 
-export default function FoodPage() {
-  const [listings, setListings] = useState<FoodStall[]>([]);
+export default function RoommatePage() {
+  const [listings, setListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState<SearchState>(DEFAULT_SEARCH);
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,11 +31,35 @@ export default function FoodPage() {
       Object.entries(search.filters).forEach(([k, v]) => {
         if (v !== "" && v !== null && v !== undefined) params[k] = v;
       });
-      const data = await getListings("FoodStall", params);
-      setListings(data as FoodStall[]);
+
+      const vacancies = await getListings("RoomVacancy", params);
+      // Map vacancies → roommate profile shape
+      let mapped = vacancies.map((v: any) => ({
+        id: v.id,
+        title: v.description || "Looking for Roommate",
+        gender: v.preferredTenant === "Male" ? "Boys" : v.preferredTenant === "Female" ? "Girls" : "Any",
+        occupation: "Any",
+        roomType: v.roomType || "Shared",
+        rent: v.rent,
+        address: v.location,
+        city: v.city || search.location,
+        ownerName: v.ownerName || "Advertiser",
+        ownerContact: v.ownerContact,
+        images: v.images || [],
+        status: v.status || "active",
+        feedType: "Roommate",
+      }));
+
+      // Filter by roommate-specific filters on the frontend
+      const { gender, occupation, roomType } = search.filters;
+      if (gender && gender !== "Any") mapped = mapped.filter((r) => r.gender === gender);
+      if (roomType) mapped = mapped.filter((r) => r.roomType?.toLowerCase() === String(roomType).toLowerCase());
+
+      // Fall back to mocks if no live data
+      setListings(mapped.length > 0 ? mapped : MOCK_ROOMMATES);
       setCurrentPage(1);
-    } catch (err) {
-      console.error("Failed to load food stalls:", err);
+    } catch {
+      setListings(MOCK_ROOMMATES);
     } finally {
       setLoading(false);
     }
@@ -52,9 +76,9 @@ export default function FoodPage() {
         onSearch={setSearch}
         currentSearch={search}
         filterOptions={FILTERS}
-        categoryColor="bg-[var(--food-primary)]"
-        categoryLight="bg-[var(--food-primary-light)]"
-        categoryText="text-[var(--food-primary)]"
+        categoryColor="bg-[var(--roommate-primary)]"
+        categoryLight="bg-[var(--roommate-primary-light)]"
+        categoryText="text-[var(--roommate-primary)]"
         categoryLabel={MODULE_TITLE}
       />
 
@@ -64,30 +88,30 @@ export default function FoodPage() {
         categoryLabel={MODULE_TITLE}
         categorySubtitle={MODULE_SUBTITLE}
         onPostClick={() => setIsModalOpen(true)}
-        themeColorClass="bg-[var(--food-primary)] hover:brightness-110"
+        themeColorClass="bg-[var(--roommate-primary)] hover:brightness-110"
       />
 
       {loading ? (
         <ListingGrid loading skeletonCount={6}>{null}</ListingGrid>
       ) : listings.length === 0 ? (
         <EmptyState
-          title="No food stalls found"
-          description="No food joints match your search. Try a different city or remove filters."
+          title="No roommates found"
+          description="No roommate listings match your preferences. Try broadening your search."
           onClearFilters={() => setSearch(DEFAULT_SEARCH)}
-          colorClass="text-[var(--food-primary)]"
+          colorClass="text-[var(--roommate-primary)]"
         />
       ) : (
         <>
           <ListingGrid>
             {paginated.map((item) => (
-              <ListingCard key={item.id} type="FoodStall" data={item} />
+              <ListingCard key={item.id} type="Roommate" data={item} />
             ))}
           </ListingGrid>
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
-            activeColorClass="bg-[var(--food-primary)] text-white"
+            activeColorClass="bg-[var(--roommate-primary)] text-white"
           />
         </>
       )}
@@ -96,7 +120,7 @@ export default function FoodPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSuccess={loadListings}
-        module="food"
+        module="roommate"
       />
     </div>
   );

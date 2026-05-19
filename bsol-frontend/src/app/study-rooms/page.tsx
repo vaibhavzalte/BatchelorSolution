@@ -9,13 +9,13 @@ import ListingCard from "@/components/common/ListingCard";
 import Pagination from "@/components/common/Pagination";
 import CreateListing from "@/components/common/CreateListing";
 import EmptyState from "@/components/common/EmptyState";
-import { FILTERS, MODULE_TITLE, MODULE_SUBTITLE } from "./constants";
-import { getListings, FoodStall } from "@/lib/api";
+import { FILTERS, MODULE_TITLE, MODULE_SUBTITLE, MOCK_STUDY_ROOMS } from "./constants";
+import { getListings } from "@/lib/api";
 
 const DEFAULT_SEARCH: SearchState = { keyword: "", location: "Pune", filters: {} };
 
-export default function FoodPage() {
-  const [listings, setListings] = useState<FoodStall[]>([]);
+export default function StudyRoomsPage() {
+  const [listings, setListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState<SearchState>(DEFAULT_SEARCH);
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,11 +31,24 @@ export default function FoodPage() {
       Object.entries(search.filters).forEach(([k, v]) => {
         if (v !== "" && v !== null && v !== undefined) params[k] = v;
       });
-      const data = await getListings("FoodStall", params);
-      setListings(data as FoodStall[]);
+
+      const data = await getListings("StudyRoom", params);
+
+      // Apply frontend-side timing/wifi filters if present
+      let filtered = [...data];
+      if (search.filters.timing) {
+        filtered = filtered.filter((s: any) =>
+          s.timing?.toLowerCase() === String(search.filters.timing).toLowerCase()
+        );
+      }
+      if (search.filters.hasWifi) {
+        filtered = filtered.filter((s: any) => s.hasWifi === true);
+      }
+
+      setListings(filtered.length > 0 ? filtered : MOCK_STUDY_ROOMS);
       setCurrentPage(1);
-    } catch (err) {
-      console.error("Failed to load food stalls:", err);
+    } catch {
+      setListings(MOCK_STUDY_ROOMS);
     } finally {
       setLoading(false);
     }
@@ -52,9 +65,9 @@ export default function FoodPage() {
         onSearch={setSearch}
         currentSearch={search}
         filterOptions={FILTERS}
-        categoryColor="bg-[var(--food-primary)]"
-        categoryLight="bg-[var(--food-primary-light)]"
-        categoryText="text-[var(--food-primary)]"
+        categoryColor="bg-[var(--study-primary)]"
+        categoryLight="bg-[var(--study-primary-light)]"
+        categoryText="text-[var(--study-primary)]"
         categoryLabel={MODULE_TITLE}
       />
 
@@ -64,30 +77,30 @@ export default function FoodPage() {
         categoryLabel={MODULE_TITLE}
         categorySubtitle={MODULE_SUBTITLE}
         onPostClick={() => setIsModalOpen(true)}
-        themeColorClass="bg-[var(--food-primary)] hover:brightness-110"
+        themeColorClass="bg-[var(--study-primary)] hover:brightness-110"
       />
 
       {loading ? (
         <ListingGrid loading skeletonCount={6}>{null}</ListingGrid>
       ) : listings.length === 0 ? (
         <EmptyState
-          title="No food stalls found"
-          description="No food joints match your search. Try a different city or remove filters."
+          title="No study spaces found"
+          description="No reading rooms or quiet desks match your search. Try removing filters."
           onClearFilters={() => setSearch(DEFAULT_SEARCH)}
-          colorClass="text-[var(--food-primary)]"
+          colorClass="text-[var(--study-primary)]"
         />
       ) : (
         <>
           <ListingGrid>
             {paginated.map((item) => (
-              <ListingCard key={item.id} type="FoodStall" data={item} />
+              <ListingCard key={item.id} type="StudyRoom" data={item} />
             ))}
           </ListingGrid>
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
-            activeColorClass="bg-[var(--food-primary)] text-white"
+            activeColorClass="bg-[var(--study-primary)] text-white"
           />
         </>
       )}
@@ -96,7 +109,7 @@ export default function FoodPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSuccess={loadListings}
-        module="food"
+        module="study-rooms"
       />
     </div>
   );

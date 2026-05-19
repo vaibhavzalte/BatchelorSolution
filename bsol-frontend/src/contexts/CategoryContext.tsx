@@ -5,12 +5,13 @@ import { usePathname, useRouter } from "next/navigation";
 
 export const CATEGORIES = [
   { id: "all", label: "Posts", hex: "#fff7ed", light: "bg-orange-50", color: "bg-orange-500" },
-  { id: "vacancies", label: "Vacancies", hex: "#ecfdf5", light: "bg-emerald-50", color: "bg-emerald-500" },
-  { id: "roommate", label: "Roommate", hex: "#f5f3ff", light: "bg-violet-50", color: "bg-violet-500" },
-  { id: "rooms", label: "Rooms", hex: "#eef2ff", light: "bg-indigo-50", color: "bg-indigo-500" },
-  { id: "food", label: "Food", hex: "#fdf2f8", light: "bg-pink-50", color: "bg-pink-500" },
-  { id: "mess", label: "Mess", hex: "#fffbeb", light: "bg-amber-50", color: "bg-amber-500" },
-  { id: "study-rooms", label: "Study Rooms", hex: "#ecfdf5", light: "bg-emerald-50", color: "bg-emerald-500" }
+  { id: "rooms", label: "Rooms", hex: "#eff6ff", light: "bg-blue-50", color: "bg-blue-600" },
+  { id: "vacancies", label: "Vacancies", hex: "#fff1f2", light: "bg-rose-50", color: "bg-rose-600" },
+  { id: "roommate", label: "Roommate", hex: "#f5f3ff", light: "bg-violet-50", color: "bg-violet-600" },
+  { id: "food", label: "Food", hex: "#fdf2f8", light: "bg-pink-50", color: "bg-pink-600" },
+  { id: "mess", label: "Mess", hex: "#fff7ed", light: "bg-orange-50", color: "bg-orange-600" },
+  { id: "study-rooms", label: "Study Rooms", hex: "#ecfdf5", light: "bg-emerald-50", color: "bg-emerald-600" },
+  { id: "posts", label: "All Posts", hex: "#fff7ed", light: "bg-orange-50", color: "bg-orange-500" },
 ];
 
 interface CategoryContextType {
@@ -24,7 +25,7 @@ const CategoryContext = createContext<CategoryContextType | undefined>(undefined
 export function CategoryProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  
+
   // Sync initial state from URL
   const getInitialCategory = () => {
     const path = pathname.split("/").filter(Boolean).pop(); // Get last segment if it's a category
@@ -47,7 +48,7 @@ export function CategoryProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const currentPath = pathname === "/" ? "all" : pathname.split("/").filter(Boolean).pop() || "all";
     if (CATEGORIES.find(c => c.id === currentPath)) {
-        setActiveCategoryState(currentPath);
+      setActiveCategoryState(currentPath);
     }
   }, [pathname]);
 

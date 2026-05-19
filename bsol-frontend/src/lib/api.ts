@@ -11,7 +11,7 @@ const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type ListingType = "Room" | "Mess" | "FoodStall" | "RoomVacancy";
+export type ListingType = "Room" | "Mess" | "FoodStall" | "RoomVacancy" | "StudyRoom";
 
 export interface RoomVacancy {
   id?: number;

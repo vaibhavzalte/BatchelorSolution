@@ -49,14 +49,14 @@ const Footer = () => {
       <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
         <div className="flex flex-col gap-6">
           <Link href="/" className="flex items-center gap-4 transition-transform hover:scale-105 group">
-            <div 
+            <div
               className="relative w-16 h-16 rounded-2xl flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 overflow-hidden transition-all duration-1000"
               style={{ backgroundColor: activeCatData?.hex || "#ffffff" }}
             >
-              <Image 
-                src="/bs-icon.png" 
-                alt="BatchelorSolution Icon" 
-                width={64} 
+              <Image
+                src="/bs-icon.png"
+                alt="BatchelorSolution Icon"
+                width={64}
                 height={64}
                 className="object-contain"
               />

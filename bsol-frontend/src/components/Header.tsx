@@ -29,20 +29,19 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed left-1/2 -translate-x-1/2 w-[95%] max-w-7xl z-50 transition-all duration-300 rounded-2xl ${
-        isScrolled ? "glass shadow-glass py-3" : "bg-transparent py-5"
-      }`}
+      className={`fixed left-1/2 -translate-x-1/2 w-[95%] max-w-7xl z-50 transition-all duration-300 rounded-2xl ${isScrolled ? "glass shadow-glass py-3" : "bg-transparent py-5"
+        }`}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-4 group transition-transform hover:scale-105">
-          <div 
+          <div
             className="relative w-16 h-16 rounded-2xl flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 overflow-hidden transition-all duration-1000"
             style={{ backgroundColor: activeCatData?.hex || "#ffffff" }}
           >
-            <Image 
-              src="/bs-icon.png" 
-              alt="BatchelorSolution Icon" 
-              width={64} 
+            <Image
+              src="/bs-icon.png"
+              alt="BatchelorSolution Icon"
+              width={64}
               height={64}
               priority
               className="object-contain"
